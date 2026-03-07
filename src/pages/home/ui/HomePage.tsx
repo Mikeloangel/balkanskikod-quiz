@@ -48,17 +48,27 @@ export const HomePage = ({ onStorageUpdated }: HomePageProps) => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
+  const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Balkanski kod';
 
   const storage = readStorage();
   const stats = getGlobalStats(tracksSortedByAddedDate, storage);
   const lastSolved = getLastSolvedTracks(tracksSortedByAddedDate, storage, 5);
   const sharePayload = useMemo(
-    () => ({
-      url: window.location.origin,
-      title: 'Balkanski kod',
-      text: 'Попробуй угадать треки в Balkanski kod',
-    }),
-    [],
+    () => {
+      const configuredBaseUrl = import.meta.env.VITE_APP_BASE_URL?.trim();
+      const appBaseUrl = configuredBaseUrl
+        ? configuredBaseUrl.replace(/\/$/, '')
+        : new URL(import.meta.env.BASE_URL, window.location.origin)
+            .toString()
+            .replace(/\/$/, '');
+
+      return {
+        url: `${appBaseUrl}/#/`,
+        title: appName,
+        text: `Попробуй угадать треки в ${appName}`,
+      };
+    },
+    [appName],
   );
   const hasWebShare = Boolean(navigator.share);
 

@@ -72,6 +72,15 @@ type TrackPageContentProps = {
   onStorageUpdated: () => void;
 };
 
+const resolveLocalTrackUrl = (localPath: string): string => {
+  if (/^https?:\/\//i.test(localPath)) {
+    return localPath;
+  }
+
+  const normalizedPath = localPath.replace(/^\/+/, '');
+  return `${import.meta.env.BASE_URL}${normalizedPath}`;
+};
+
 const glowAppear = keyframes`
   0% {
     opacity: 0.92;
@@ -145,13 +154,20 @@ const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) =>
       : null;
   const attemptsForView = [...progress.attemptsHistory].reverse();
   const difficultyStars = '★'.repeat(track.difficulty).padEnd(5, '☆');
+  const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Balkanski kod';
+  const configuredBaseUrl = import.meta.env.VITE_APP_BASE_URL?.trim();
+  const appBaseUrl = configuredBaseUrl
+    ? configuredBaseUrl.replace(/\/$/, '')
+    : new URL(import.meta.env.BASE_URL, window.location.origin)
+        .toString()
+        .replace(/\/$/, '');
   const sharePayload = {
-    url: `${window.location.origin}/track/${track.id}`,
-    title: 'Balkanski kod',
+    url: `${appBaseUrl}/#/track/${track.id}`,
+    title: appName,
     text: `Попробуй угадать загадку: ${track.names.safe}`,
   };
   const hasWebShare = Boolean(navigator.share);
-  const canSeek = audioDuration > 0;
+  const canSeek = audioDuration > 0;  
   const shouldShowGlow = isSolved || isRevealed || isPlaying;
   const glowAnimation = isPlaying
     ? `${glowAppear} 380ms ease-out, ${glowWave} 2600ms ease-in-out infinite`
@@ -370,7 +386,7 @@ const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) =>
             {audioError ? <Alert severity="error">{audioError}</Alert> : null}
             <audio
               ref={audioRef}
-              src={track.links.local}
+              src={resolveLocalTrackUrl(track.links.local)}
               preload="none"
               onLoadedMetadata={() => {
                 const duration = audioRef.current?.duration ?? 0;
