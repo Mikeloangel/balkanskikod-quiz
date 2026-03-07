@@ -92,6 +92,66 @@ export const normalizeAnswer = (value: string): string => {
   return replaceCyrillicWithLatin(base).replace(/\s+/g, ' ').trim();
 };
 
+const splitTitleAndArtist = (value: string): { full: string; titleOnly: string } => {
+  const full = value.trim();
+  const titleOnly = full.split(/\s[-–—]\s/)[0].trim();
+
+  return {
+    full,
+    titleOnly: titleOnly || full,
+  };
+};
+
+const getNormalizedTrackNameCandidates = (track: Track): string[] => {
+  const sourceNames = [track.names.russian, track.names.original];
+  const normalizedCandidates = sourceNames.flatMap((name) => {
+    const { full, titleOnly } = splitTitleAndArtist(name);
+
+    return [normalizeAnswer(full), normalizeAnswer(titleOnly)].filter(Boolean);
+  });
+
+  return Array.from(new Set(normalizedCandidates));
+};
+
+const getNormalizedTrackTitleCandidates = (track: Track): string[] => {
+  const sourceNames = [track.names.russian, track.names.original];
+  const normalizedTitleCandidates = sourceNames
+    .map((name) => splitTitleAndArtist(name).titleOnly)
+    .map((titleOnly) => normalizeAnswer(titleOnly))
+    .filter(Boolean);
+
+  return Array.from(new Set(normalizedTitleCandidates));
+};
+
+const containsTitleWordsMatch = (
+  normalizedInput: string,
+  normalizedTitle: string,
+): boolean => {
+  const inputWords = extractSignificantWords(normalizedInput);
+  const titleWords = extractSignificantWords(normalizedTitle);
+
+  if (inputWords.length === 0 || titleWords.length === 0) {
+    return false;
+  }
+
+  const usedInputIndices = new Set<number>();
+  const matchedTitleWords = titleWords.every((titleWord) => {
+    const matchedIndex = inputWords.findIndex(
+      (inputWord, index) =>
+        !usedInputIndices.has(index) && isFuzzyWordMatch(inputWord, titleWord),
+    );
+
+    if (matchedIndex >= 0) {
+      usedInputIndices.add(matchedIndex);
+      return true;
+    }
+
+    return false;
+  });
+
+  return matchedTitleWords;
+};
+
 const levenshteinDistance = (a: string, b: string): number => {
   if (a === b) {
     return 0;
@@ -223,46 +283,39 @@ export type AnswerCheckResult = {
 
 export const checkAnswer = (answer: string, track: Track): AnswerCheckResult => {
   const normalizedInput = normalizeAnswer(answer);
-  const normalizedRussian = normalizeAnswer(track.names.russian);
-  const normalizedOriginal = normalizeAnswer(track.names.original);
+  const normalizedTargets = getNormalizedTrackNameCandidates(track);
+  const normalizedTitleTargets = getNormalizedTrackTitleCandidates(track);
 
   if (!normalizedInput) {
     return { isCorrect: false, similarity: 0 };
   }
 
-  const directMatch =
-    normalizedInput === normalizedRussian || normalizedInput === normalizedOriginal;
+  const directMatch = normalizedTargets.includes(normalizedInput);
   if (directMatch) {
     return { isCorrect: true, similarity: 1 };
   }
 
-  const directWordSetMatch =
-    exactWordSetMatch(normalizedInput, normalizedRussian) ||
-    exactWordSetMatch(normalizedInput, normalizedOriginal);
+  const directWordSetMatch = normalizedTargets.some((target) =>
+    exactWordSetMatch(normalizedInput, target),
+  );
   if (directWordSetMatch) {
     return { isCorrect: true, similarity: 1 };
   }
 
-  const russianSimilarity = similarityScore(normalizedInput, normalizedRussian);
-  const originalSimilarity = similarityScore(normalizedInput, normalizedOriginal);
-  const russianWordSimilarity = wordSetSimilarityScore(normalizedInput, normalizedRussian);
-  const originalWordSimilarity = wordSetSimilarityScore(normalizedInput, normalizedOriginal);
-  const russianFuzzyWordSimilarity = fuzzyWordSetSimilarityScore(
-    normalizedInput,
-    normalizedRussian,
+  const containsTitleMatch = normalizedTitleTargets.some((titleTarget) =>
+    containsTitleWordsMatch(normalizedInput, titleTarget),
   );
-  const originalFuzzyWordSimilarity = fuzzyWordSetSimilarityScore(
-    normalizedInput,
-    normalizedOriginal,
-  );
-  const similarity = Math.max(
-    russianSimilarity,
-    originalSimilarity,
-    russianWordSimilarity,
-    originalWordSimilarity,
-    russianFuzzyWordSimilarity,
-    originalFuzzyWordSimilarity,
-  );
+  if (containsTitleMatch) {
+    return { isCorrect: true, similarity: 1 };
+  }
+
+  const similarity = normalizedTargets.reduce((best, target) => {
+    const charSimilarity = similarityScore(normalizedInput, target);
+    const wordSimilarity = wordSetSimilarityScore(normalizedInput, target);
+    const fuzzyWordSimilarity = fuzzyWordSetSimilarityScore(normalizedInput, target);
+
+    return Math.max(best, charSimilarity, wordSimilarity, fuzzyWordSimilarity);
+  }, 0);
 
   return {
     isCorrect: similarity > 0.9,
