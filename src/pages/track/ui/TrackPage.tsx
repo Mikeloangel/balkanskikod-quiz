@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Stack } from '@mui/material';
-import { tracks } from '../../../shared/config/tracks';
-import type { Track } from '../../../shared/types/track';
+import { tracks } from '@/shared/config';
+import type { Track } from '@/shared/models';
 import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
 import {
   addAttempt,
@@ -11,7 +11,7 @@ import {
   giveUpTrack,
   markTrackSolved,
   revealSerbianTitle,
-} from '../../../entities/progress/model/storage';
+} from '@/entities/progress';
 import { AttemptsHistoryBlock } from './elements/AttemptsHistoryBlock';
 import { AudioPlayerBlock } from './elements/AudioPlayerBlock';
 import { GiveUpDialog } from './elements/GiveUpDialog';

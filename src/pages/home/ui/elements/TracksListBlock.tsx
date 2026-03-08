@@ -1,6 +1,6 @@
-import { getTrackProgressSafe, isTrackNew } from '../../../../entities/progress/model/stats';
-import type { StorageSchema, TrackProgressStatus } from '../../../../entities/progress/model/types';
-import type { Track } from '@/shared/types/track';
+import { getTrackProgressSafe, isTrackNew } from '@/entities/progress';
+import type { StorageSchema, TrackProgressStatus } from '@/entities/progress';
+import type { Track } from '@/shared/models';
 import { Paper, Typography, Stack, Box, Button, Chip } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 

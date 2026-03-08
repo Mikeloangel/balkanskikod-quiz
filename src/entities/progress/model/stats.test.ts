@@ -5,7 +5,7 @@ import {
   getGlobalStats,
   getLastSolvedTracks,
 } from './stats'
-import type { Track } from '../../../shared/types/track'
+import type { Track } from '@/shared/models'
 import type { StorageSchema } from './types'
 
 describe('stats', () => {

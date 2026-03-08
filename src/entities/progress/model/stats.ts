@@ -1,4 +1,4 @@
-import type { Track } from '../../../shared/types/track';
+import type { Track } from '@/shared/models';
 import type { StorageSchema, TrackProgress } from './types';
 
 export type GlobalStats = {

@@ -1,4 +1,4 @@
-import type { Track } from '@/shared/types/track';
+import type { Track } from '@/shared/models';
 import { Paper, Typography, Stack, Chip, Alert } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 

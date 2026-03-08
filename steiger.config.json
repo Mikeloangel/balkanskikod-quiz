@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "layers": [
+      "app",
+      "pages",
+      "widgets",
+      "features",
+      "entities",
+      "shared"
+    ]
+  }
+}

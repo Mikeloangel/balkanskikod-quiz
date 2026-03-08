@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { AboutPage } from '../pages/about/ui/AboutPage';
-import { HomePage } from '../pages/home/ui/HomePage';
-import { TrackPage } from '../pages/track/ui/TrackPage';
+import { AboutPage } from '@/pages/about';
+import { HomePage } from '@/pages/home';
+import { TrackPage } from '@/pages/track';
 
 function App() {
   const [, setStorageUpdateTick] = useState(0);

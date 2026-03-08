@@ -1,5 +1,5 @@
  import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { shareLink } from './share'
+import { shareLink } from '@/shared/lib/share'
 
 describe('shareLink', () => {
   const mockUrl = 'https://example.com'

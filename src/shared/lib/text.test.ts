@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { normalizeAnswer, checkAnswer, getPartialMatches } from './text'
-import type { Track } from '../types/track'
+import type { Track } from '@/shared/models'
 
 describe('normalizeAnswer', () => {
   it('should normalize Cyrillic characters to Latin', () => {

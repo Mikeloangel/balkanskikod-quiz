@@ -1,6 +1,6 @@
 import { Chip, Paper, Stack, Typography } from '@mui/material';
-import type { Track } from '../../../../shared/types/track';
-import { checkAnswer, getPartialMatches } from '../../../../shared/lib/text';
+import type { Track } from '@/shared/models';
+import { checkAnswer, getPartialMatches } from '@/shared/lib/text';
 
 type AttemptsHistoryBlockProps = {
   attemptsForView: string[];

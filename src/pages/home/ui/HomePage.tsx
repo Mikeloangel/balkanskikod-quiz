@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import { Container, Stack } from '@mui/material';
-import { tracksSortedByAddedDate } from '../../../shared/config/tracks';
+import { tracksSortedByAddedDate } from '@/shared/config';
 import {
   readStorage,
   resetProgress,
-} from '../../../entities/progress/model/storage';
+} from '@/entities/progress';
 import {
   getGlobalStats,
   getLastSolvedTracks,
-} from '../../../entities/progress/model/stats';
-import { shareLink } from '../../../shared/lib/share';
+} from '@/entities/progress';
+import { shareLink } from '@/shared/lib/share';
 import { HeaderBlock } from './elements/HeaderBlock';
 import { StatsBlock } from './elements/StatsBlock';
 import { LastSolvedBlock } from './elements/LastSolvedBlock';

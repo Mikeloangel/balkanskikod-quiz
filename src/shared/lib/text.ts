@@ -1,4 +1,4 @@
-import type { Track } from '../types/track';
+import type { Track } from '@/shared/models';
 
 const STOP_WORDS = new Set([
   'и',

@@ -1,4 +1,4 @@
-import type { GlobalStats } from '@/entities/progress/model/stats';
+import type { GlobalStats } from '@/entities/progress';
 import { Paper, Typography, Stack, Chip } from '@mui/material';
 
 type StatsBlockProps = {

@@ -10,7 +10,7 @@ import {
   applyHint,
   giveUpTrack,
   resetProgress,
-} from './storage'
+} from '@/entities/progress'
 import { STORAGE_KEY, STORAGE_VERSION } from './types'
 
 // Mock localStorage with persistent storage
