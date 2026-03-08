@@ -1,34 +1,9 @@
 import { useRef, useState } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
-import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
-import { keyframes } from '@mui/system';
-import {
-  Alert,
-  Box,
-  ButtonGroup,
-  Button,
-  Chip,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Link,
-  Paper,
-  Slider,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { Container, Stack } from '@mui/material';
 import { tracks } from '../../../shared/config/tracks';
 import type { Track } from '../../../shared/types/track';
-import { checkAnswer, getPartialMatches, normalizeAnswer } from '../../../shared/lib/text';
+import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
 import {
   addAttempt,
   applyHint,
@@ -37,6 +12,17 @@ import {
   markTrackSolved,
   revealSerbianTitle,
 } from '../../../entities/progress/model/storage';
+import { AttemptsHistoryBlock } from './elements/AttemptsHistoryBlock';
+import { AudioPlayerBlock } from './elements/AudioPlayerBlock';
+import { GiveUpDialog } from './elements/GiveUpDialog';
+import { GuessFormBlock } from './elements/GuessFormBlock';
+import { ResultCardBlock } from './elements/ResultCardBlock';
+import { ShareDialog } from './elements/ShareDialog';
+import { StartGuessingCta } from './elements/StartGuessingCta';
+import { TrackMetaBlock } from './elements/TrackMetaBlock';
+import { TrackNotFound } from './elements/TrackNotFound';
+import { TrackPageHeader } from './elements/TrackPageHeader';
+import { TrackResultShell } from './elements/TrackResultShell';
 
 type TrackPageProps = {
   onStorageUpdated: () => void;
@@ -47,21 +33,7 @@ export const TrackPage = ({ onStorageUpdated }: TrackPageProps) => {
   const track = tracks.find((item) => item.id === id);
 
   if (!track) {
-    return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Paper sx={{ p: 3 }}>
-          <Stack spacing={2}>
-            <Typography variant="h5">Трек не найден</Typography>
-            <Typography color="text.secondary">
-              Проверь ссылку или вернись на главную.
-            </Typography>
-            <Button component={RouterLink} to="/">
-              На главную
-            </Button>
-          </Stack>
-        </Paper>
-      </Container>
-    );
+    return <TrackNotFound />;
   }
 
   return <TrackPageContent key={track.id} track={track} onStorageUpdated={onStorageUpdated} />;
@@ -81,31 +53,6 @@ const resolveLocalTrackUrl = (localPath: string): string => {
   return `${import.meta.env.BASE_URL}${normalizedPath}`;
 };
 
-const glowAppear = keyframes`
-  0% {
-    opacity: 0.92;
-    box-shadow: 0 0 0 0 rgba(var(--glow-rgb), 0);
-  }
-  100% {
-    opacity: 1;
-  }
-`;
-
-const glowWave = keyframes`
-  0%, 100% {
-    box-shadow:
-      0 0 0 1px rgba(var(--glow-rgb), 0.42),
-      0 0 22px rgba(var(--glow-rgb), 0.25),
-      0 10px 26px rgba(var(--glow-rgb), 0.16);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px rgba(var(--glow-rgb), 0.5),
-      0 0 30px rgba(var(--glow-rgb), 0.34),
-      0 14px 32px rgba(var(--glow-rgb), 0.2);
-  }
-`;
-
 const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) => {
   const progress = getTrackProgress(track.id);
   const [startedProgressSignature, setStartedProgressSignature] = useState<string | null>(null);
@@ -119,7 +66,7 @@ const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) =>
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isGiveUpOpen, setIsGiveUpOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const isSolved = progress.status === 'solved';
   const isRevealed = progress.status === 'revealed';
@@ -168,38 +115,13 @@ const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) =>
   };
   const hasWebShare = Boolean(navigator.share);
   const canSeek = audioDuration > 0;  
-  const shouldShowGlow = isSolved || isRevealed || isPlaying;
-  const glowAnimation = isPlaying
-    ? `${glowAppear} 380ms ease-out, ${glowWave} 2600ms ease-in-out infinite`
-    : `${glowAppear} 380ms ease-out`;
-  const resultPaperSx = isSolved
-    ? {
-        '--glow-rgb': '255,124,200',
-        boxShadow:
-          '0 0 0 1px rgba(255,124,200,0.45), 0 0 24px rgba(255,124,200,0.28), 0 12px 28px rgba(255,124,200,0.2)',
-        background:
-          'linear-gradient(145deg, rgba(255,124,200,0.10) 0%, rgba(110,155,255,0.06) 100%)',
-        animation: glowAnimation,
-      }
+  const shellVariant = isSolved
+    ? 'solved'
     : isRevealed
-      ? {
-          '--glow-rgb': '255,167,38',
-          boxShadow:
-            '0 0 0 1px rgba(255,167,38,0.45), 0 0 24px rgba(255,167,38,0.28), 0 12px 28px rgba(255,167,38,0.2)',
-          background:
-            'linear-gradient(145deg, rgba(255,167,38,0.10) 0%, rgba(255,124,200,0.04) 100%)',
-          animation: glowAnimation,
-        }
-      : shouldShowGlow
-        ? {
-            '--glow-rgb': '198,203,213',
-            boxShadow:
-              '0 0 0 1px rgba(198,203,213,0.38), 0 0 18px rgba(198,203,213,0.22), 0 10px 24px rgba(198,203,213,0.14)',
-            background:
-              'linear-gradient(145deg, rgba(198,203,213,0.08) 0%, rgba(120,128,145,0.06) 100%)',
-            animation: glowAnimation,
-          }
-        : {};
+      ? 'revealed'
+      : isPlaying
+        ? 'playing'
+        : 'default';
 
   const formatAudioTime = (value: number): string => {
     const totalSeconds = Math.max(0, Math.floor(value));
@@ -318,352 +240,103 @@ const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) =>
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Stack spacing={2.5}>
-        <Stack spacing={1}>
-          <Typography variant="h4" fontWeight={700}>
-            Balkanski kod
-          </Typography>
-          <Typography>
-            <Link component={RouterLink} to="/" underline="hover">
-              На главную
-            </Link>{' '}
-            / {pageTitle}
-          </Typography>
-        </Stack>
+        <TrackPageHeader pageTitle={pageTitle} />
 
-        <Paper sx={{ p: 2.5, ...resultPaperSx }}>
+        <TrackResultShell variant={shellVariant} animate={isPlaying}>
           <Stack spacing={2}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography variant="h5">{pageTitle}</Typography>
-              {isSolved ? (
-                <CheckCircleRoundedIcon color="success" fontSize="small" />
-              ) : null}
-            </Stack>
-            <Typography color="text.secondary">
-              Сложность: {difficultyStars}
-            </Typography>
-            {shouldShowTrackNavigation ? (
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <Button
-                  component={RouterLink}
-                  to={previousTrack ? `/track/${previousTrack.id}` : '#'}
-                  disabled={!previousTrack}
-                  variant="outlined"
-                  color="inherit"
-                  startIcon={<NavigateBeforeRoundedIcon />}
-                >
-                  Предыдущий трек
-                </Button>
-                <Button
-                  component={RouterLink}
-                  to={nextTrack ? `/track/${nextTrack.id}` : '#'}
-                  disabled={!nextTrack}
-                  variant="outlined"
-                  color="inherit"
-                  endIcon={<NavigateNextRoundedIcon />}
-                >
-                  Следующий трек
-                </Button>
-              </Stack>
-            ) : null}
-            {openedHints.length > 0 ? (
-              <Box>
-                <Typography color="text.secondary" mb={0.5}>
-                  Открытые подсказки:
-                </Typography>
-                <Stack spacing={0.5}>
-                  {openedHints.map((hint) => (
-                    <Typography key={hint}>- {hint}</Typography>
-                  ))}
-                </Stack>
-              </Box>
-            ) : null}
-            {progress.revealedSerbianTitle ? (
-              <Typography color="text.secondary">
-                Явная подсказка: {track.names.serbian}
-              </Typography>
-            ) : null}
+            <TrackMetaBlock
+              pageTitle={pageTitle}
+              showSolvedIcon={isSolved}
+              difficultyStars={difficultyStars}
+              showNavigation={shouldShowTrackNavigation}
+              previousTrack={previousTrack ? { id: previousTrack.id } : null}
+              nextTrack={nextTrack ? { id: nextTrack.id } : null}
+              openedHints={openedHints}
+              revealedSerbianTitle={progress.revealedSerbianTitle}
+              serbianTitle={track.names.serbian}
+            />
 
-            {audioError ? <Alert severity="error">{audioError}</Alert> : null}
-            <audio
-              ref={audioRef}
+            <AudioPlayerBlock
+              audioRef={audioRef}
               src={resolveLocalTrackUrl(track.links.local)}
-              preload="none"
+              audioError={audioError}
+              onAudioError={setAudioError}
               onLoadedMetadata={() => {
                 const duration = audioRef.current?.duration ?? 0;
                 setAudioDuration(Number.isFinite(duration) ? duration : 0);
               }}
-              onTimeUpdate={() =>
-                setAudioCurrentTime(audioRef.current?.currentTime ?? 0)
-              }
+              onTimeUpdate={() => setAudioCurrentTime(audioRef.current?.currentTime ?? 0)}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
               onEnded={() => setIsPlaying(false)}
-              onError={() =>
-                setAudioError(
-                  'MP3 не загрузился. Проверь путь к файлу в public/tracks.',
-                )
-              }
+              isPlaying={isPlaying}
+              onTogglePlayback={handleTogglePlayback}
+              onRestart={handleRestart}
+              isFinished={isFinished}
+              canSeek={canSeek}
+              audioDuration={audioDuration}
+              audioCurrentTime={audioCurrentTime}
+              onSeek={handleSeek}
+              formatAudioTime={formatAudioTime}
             />
 
-            <Paper variant="outlined" sx={{ p: 1 }}>
-              <Stack spacing={1}>
-                <ButtonGroup fullWidth variant="contained" aria-label="Управление плеером">
-                  <Button onClick={handleTogglePlayback}>
-                    {isPlaying ? 'Пауза' : 'Старт'}
-                  </Button>
-                  <Button color="secondary" onClick={handleRestart}>
-                    С начала
-                  </Button>
-                </ButtonGroup>
-                {isFinished ? (
-                  <Box>
-                    <Slider
-                      size="small"
-                      min={0}
-                      max={audioDuration || 1}
-                      step={0.1}
-                      value={Math.min(audioCurrentTime, audioDuration || 1)}
-                      onChange={handleSeek}
-                      disabled={!canSeek}
-                    />
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="caption" color="text.secondary">
-                        {formatAudioTime(audioCurrentTime)}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {formatAudioTime(audioDuration)}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                ) : null}
-              </Stack>
-            </Paper>
-
             {!isFinished && shouldShowStartCta ? (
-              <Button onClick={handleStart}>Начать угадывать</Button>
+              <StartGuessingCta onStart={handleStart} />
             ) : null}
 
             {isFinished ? (
-              <>
-                <Divider />
-
-                <Stack spacing={1}>
-                  {isSolved ? (
-                    <Chip color="success" label="Угадан честно" />
-                  ) : (
-                    <Chip color="warning" label="Раскрыт через сдачу" />
-                  )}
-
-                  <Typography>Сербское: {track.names.serbian}</Typography>
-                  <Typography>Русское: {track.names.russian}</Typography>
-                  <Typography>Оригинал: {track.names.original}</Typography>
-
-                  <Typography>
-                    Попытки: {progress.attemptsCount} | Подсказок: {progress.hintsUsedCount} |
-                    Явная подсказка: {progress.revealedSerbianTitle ? 'да' : 'нет'}
-                  </Typography>
-
-                  {track.links.suno ? (
-                    <Button
-                      component="a"
-                      href={track.links.suno}
-                      target="_blank"
-                      rel="noreferrer"
-                      variant="outlined"
-                      color="secondary"
-                      startIcon={<AutoAwesomeRoundedIcon />}
-                      endIcon={<OpenInNewRoundedIcon />}
-                      fullWidth
-                      sx={{ fontWeight: 700 }}
-                    >
-                      Открыть в SUNO
-                    </Button>
-                  ) : (
-                    <Typography color="text.secondary">Ссылка SUNO недоступна.</Typography>
-                  )}
-
-                  <Button
-                    startIcon={<ShareRoundedIcon />}
-                    size="large"
-                    onClick={() => {
-                      setShareFeedback(null);
-                      setIsShareOpen(true);
-                    }}
-                    sx={{
-                      mt: 1,
-                      fontWeight: 700,
-                      background:
-                        'linear-gradient(90deg, rgba(110,155,255,1) 0%, rgba(255,124,200,1) 100%)',
-                      color: '#0f1115',
-                    }}
-                  >
-                    Поделиться загадкой
-                  </Button>
-                </Stack>
-              </>
+              <ResultCardBlock
+                isSolved={isSolved}
+                serbianTitle={track.names.serbian}
+                russianTitle={track.names.russian}
+                originalTitle={track.names.original}
+                attemptsCount={progress.attemptsCount}
+                hintsUsedCount={progress.hintsUsedCount}
+                revealedSerbianTitle={progress.revealedSerbianTitle}
+                sunoUrl={track.links.suno}
+                onOpenShare={() => {
+                  setShareFeedback(null);
+                  setIsShareOpen(true);
+                }}
+              />
             ) : null}
 
-            {!isFinished ? (
-              <Stack spacing={1.5}>
-                {!shouldShowStartCta ? (
-                  <Stack spacing={1.5}>
-                    <TextField
-                      fullWidth
-                      label={`Попытка #${progress.attemptsCount + 1}`}
-                      value={inputValue}
-                      onChange={(event) => setInputValue(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          handleSubmit();
-                        }
-                      }}
-                    />
-
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                      <Button onClick={handleSubmit}>Отправить</Button>
-                      {canShowHintButton ? (
-                        <Button color="secondary" onClick={handleHint}>
-                          {canUseHint ? 'Подсказка' : 'Показать сербское название'}
-                        </Button>
-                      ) : null}
-                      <Button color="error" onClick={() => setIsGiveUpOpen(true)}>
-                        Сдаться
-                      </Button>
-                    </Stack>
-                  </Stack>
-                ) : null}
-              </Stack>
+            {!isFinished && !shouldShowStartCta ? (
+              <GuessFormBlock
+                attemptNumber={progress.attemptsCount + 1}
+                value={inputValue}
+                onChange={setInputValue}
+                onSubmit={handleSubmit}
+                showHintButton={canShowHintButton}
+                hintButtonLabel={canUseHint ? 'Подсказка' : 'Показать сербское название'}
+                onHint={handleHint}
+                onGiveUp={() => setIsGiveUpOpen(true)}
+              />
             ) : null}
 
-            {attemptsForView.length > 0 ? (
-              <Stack spacing={1}>
-                {attemptsForView.map((attempt, index) => {
-                  const attemptResult = checkAnswer(attempt, track);
-                  const partial = getPartialMatches(attempt, track);
-                  const attemptNumber = progress.attemptsCount - index;
-
-                  return (
-                    <Paper
-                      key={`${attempt}-${attemptNumber}`}
-                      variant="outlined"
-                      sx={{ p: 1.5 }}
-                    >
-                      <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={1}
-                        alignItems={{ xs: 'flex-start', sm: 'center' }}
-                        justifyContent="space-between"
-                      >
-                        <Stack spacing={0.5}>
-                          <Typography variant="caption" color="text.secondary">
-                            Попытка #{attemptNumber}
-                          </Typography>
-                          <Typography fontWeight={600}>{attempt}</Typography>
-                        </Stack>
-                        {attemptResult.isCorrect ? (
-                          <Chip color="success" label="Угадано" size="small" />
-                        ) : partial.hasPartialMatch ? (
-                          <Chip
-                            color="info"
-                            label={`Частично: ${Math.round(partial.ratio * 100)}%`}
-                            size="small"
-                          />
-                        ) : (
-                          <Chip
-                            color="default"
-                            label={`Мимо: ${Math.round(attemptResult.similarity * 100)}%`}
-                            size="small"
-                          />
-                        )}
-                      </Stack>
-                      {!attemptResult.isCorrect && partial.hasPartialMatch ? (
-                        <Typography mt={1} variant="body2" color="text.secondary">
-                          Совпавшие слова: {partial.matchedWords.join(', ')}
-                        </Typography>
-                      ) : null}
-                    </Paper>
-                  );
-                })}
-              </Stack>
-            ) : null}
+            <AttemptsHistoryBlock
+              attemptsForView={attemptsForView}
+              attemptsCount={progress.attemptsCount}
+              track={track}
+            />
           </Stack>
-        </Paper>
+        </TrackResultShell>
       </Stack>
 
-      <Dialog
+      <GiveUpDialog
         open={isGiveUpOpen}
         onClose={() => setIsGiveUpOpen(false)}
-        fullWidth
-        maxWidth="xs"
-      >
-        <DialogTitle>Сдаться и показать ответ?</DialogTitle>
-        <DialogContent>
-          <Typography color="text.secondary" sx={{ pt: 1 }}>
-            Можно продолжать попытки, а можно открыть ответ прямо сейчас.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsGiveUpOpen(false)} color="inherit">
-            Не сейчас
-          </Button>
-          <Button onClick={handleGiveUp}>
-            Ок, показать ответ
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleGiveUp}
+      />
 
-      <Dialog
+      <ShareDialog
         open={isShareOpen}
         onClose={() => setIsShareOpen(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Поделиться загадкой</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ pt: 1 }}>
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 2,
-                background:
-                  'linear-gradient(145deg, rgba(110,155,255,0.08) 0%, rgba(255,124,200,0.08) 100%)',
-              }}
-            >
-              <Stack spacing={1}>
-                <Typography variant="overline" color="text.secondary">
-                  Предпросмотр шаринга
-                </Typography>
-                <Typography variant="h6">{sharePayload.title}</Typography>
-                <Typography>{sharePayload.text}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {sharePayload.url}
-                </Typography>
-                <Typography color="text.secondary">
-                  Web Share API: {hasWebShare ? 'доступен' : 'недоступен, будет копирование'}
-                </Typography>
-              </Stack>
-            </Paper>
-
-            <TextField
-              label="Ссылка для ручного копирования"
-              value={sharePayload.url}
-              fullWidth
-              inputProps={{ readOnly: true }}
-              onClick={handleManualCopy}
-            />
-
-            {shareFeedback ? <Alert severity="info">{shareFeedback}</Alert> : null}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsShareOpen(false)} color="inherit">
-            Закрыть
-          </Button>
-          <Button onClick={handleManualCopy} color="secondary">
-            Скопировать ссылку
-          </Button>
-        </DialogActions>
-      </Dialog>
+        payload={sharePayload}
+        hasWebShare={hasWebShare}
+        feedback={shareFeedback}
+        onCopy={handleManualCopy}
+      />
     </Container>
   );
 };
