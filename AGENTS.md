@@ -28,6 +28,7 @@
 - `src/pages/home/ui/HomePage.tsx` — главная.
 - `src/pages/track/ui/TrackPage.tsx` — игра/трек.
 - `src/pages/about/ui/AboutPage.tsx` — о проекте.
+- `cli/wizard.php` — CLI wizard для генерации треков с помощью OpenAI.
 - `docs/260307-balkanski-kod-tz-mvp.md` — базовое ТЗ.
 - `docs/260308-updates.md` — фактические изменения поверх ТЗ.
 
@@ -42,6 +43,8 @@
 - `hints` — от менее явной к более явной;
 - `difficulty` — целое 1..5;
 - `dates.added` — `YYYY-MM-DD`.
+
+Для генерации контента можно использовать `cli/wizard.php` с OpenAI API.
 
 Подсказочный шаблон для генерации контента: `docs/hints.md`.
 
