@@ -4,14 +4,7 @@ import { Container, Stack } from '@mui/material';
 import { tracks } from '@/shared/config';
 import type { Track } from '@/shared/models';
 import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
-import {
-  addAttempt,
-  applyHint,
-  getTrackProgress,
-  giveUpTrack,
-  markTrackSolved,
-  revealSerbianTitle,
-} from '@/entities/progress';
+import { useProgressStore, selectTrackProgress } from '@/entities/progress';
 import { AttemptsHistoryBlock } from './elements/AttemptsHistoryBlock';
 import { AudioPlayerBlock } from './elements/AudioPlayerBlock';
 import { GiveUpDialog } from './elements/GiveUpDialog';
@@ -24,11 +17,7 @@ import { TrackNotFound } from './elements/TrackNotFound';
 import { TrackPageHeader } from './elements/TrackPageHeader';
 import { TrackResultShell } from './elements/TrackResultShell';
 
-type TrackPageProps = {
-  onStorageUpdated: () => void;
-};
-
-export const TrackPage = ({ onStorageUpdated }: TrackPageProps) => {
+export const TrackPage = () => {
   const { id } = useParams<{ id: string }>();
   const track = tracks.find((item) => item.id === id);
 
@@ -36,12 +25,11 @@ export const TrackPage = ({ onStorageUpdated }: TrackPageProps) => {
     return <TrackNotFound />;
   }
 
-  return <TrackPageContent key={track.id} track={track} onStorageUpdated={onStorageUpdated} />;
+  return <TrackPageContent key={track.id} track={track} />;
 };
 
 type TrackPageContentProps = {
   track: Track;
-  onStorageUpdated: () => void;
 };
 
 const resolveLocalTrackUrl = (localPath: string): string => {
@@ -53,8 +41,9 @@ const resolveLocalTrackUrl = (localPath: string): string => {
   return `${import.meta.env.BASE_URL}${normalizedPath}`;
 };
 
-const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) => {
-  const progress = getTrackProgress(track.id);
+const TrackPageContent = ({ track }: TrackPageContentProps) => {
+  const { state, actions } = useProgressStore();
+  const progress = selectTrackProgress(state, track.id);
   const [startedProgressSignature, setStartedProgressSignature] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [inputValue, setInputValue] = useState(
@@ -195,37 +184,31 @@ const TrackPageContent = ({ track, onStorageUpdated }: TrackPageContentProps) =>
       return;
     }
 
-    addAttempt(track.id, value);
+    actions.addAttempt(track.id, value);
     setStartedProgressSignature(null);
 
     const result = checkAnswer(value, track);
     if (result.isCorrect) {
-      markTrackSolved(track.id);
-      onStorageUpdated();
+      actions.markTrackSolved(track.id);
       return;
     }
-
-    onStorageUpdated();
   };
 
   const handleHint = () => {
     if (canUseHint) {
-      applyHint(track.id);
+      actions.applyHint(track.id);
       setStartedProgressSignature(null);
-      onStorageUpdated();
       return;
     }
 
-    revealSerbianTitle(track.id);
+    actions.revealSerbianTitle(track.id);
     setStartedProgressSignature(null);
-    onStorageUpdated();
   };
 
   const handleGiveUp = () => {
-    giveUpTrack(track.id);
+    actions.giveUpTrack(track.id);
     setStartedProgressSignature(null);
     setIsGiveUpOpen(false);
-    onStorageUpdated();
   };
 
   const handleManualCopy = async () => {

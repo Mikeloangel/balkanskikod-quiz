@@ -1,14 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Container, Stack } from '@mui/material';
 import { tracksSortedByAddedDate } from '@/shared/config';
-import {
-  readStorage,
-  resetProgress,
-} from '@/entities/progress';
-import {
-  getGlobalStats,
-  getLastSolvedTracks,
-} from '@/entities/progress';
+import { useProgressStore, selectGlobalStats, selectLastSolved } from '@/entities/progress';
+import type { StorageSchema } from '@/entities/progress';
 import { shareLink } from '@/shared/lib/share';
 import { HeaderBlock } from './elements/HeaderBlock';
 import { StatsBlock } from './elements/StatsBlock';
@@ -18,19 +12,22 @@ import { FooterBlock } from './elements/FooterBlock';
 import { ShareDialog } from './elements/ShareDialog';
 import { ResetDialog } from './elements/ResetDialog';
 
-type HomePageProps = {
-  onStorageUpdated: () => void;
-};
-
-export const HomePage = ({ onStorageUpdated }: HomePageProps) => {
+export const HomePage = () => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
   const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Balkanski kod';
 
-  const storage = readStorage();
-  const stats = getGlobalStats(tracksSortedByAddedDate, storage);
-  const lastSolved = getLastSolvedTracks(tracksSortedByAddedDate, storage, 5);
+  const { state, actions } = useProgressStore();
+  const stats = selectGlobalStats(state, tracksSortedByAddedDate);
+  const lastSolved = selectLastSolved(state, tracksSortedByAddedDate, 5);
+  
+  // Convert ProgressState to StorageSchema for compatibility
+  const storageSchema: StorageSchema = {
+    version: 1,
+    tracks: state.tracks,
+    stats: state.stats,
+  };
   const sharePayload = useMemo(
     () => {
       const configuredBaseUrl = import.meta.env.VITE_APP_BASE_URL?.trim();
@@ -73,8 +70,7 @@ export const HomePage = ({ onStorageUpdated }: HomePageProps) => {
   };
 
   const handleReset = () => {
-    resetProgress();
-    onStorageUpdated();
+    actions.resetProgress();
     setIsResetOpen(false);
   };
 
@@ -93,7 +89,7 @@ export const HomePage = ({ onStorageUpdated }: HomePageProps) => {
 
         <LastSolvedBlock lastSolved={lastSolved} />
 
-        <TracksListBlock tracks={tracksSortedByAddedDate} storage={storage} />
+        <TracksListBlock tracks={tracksSortedByAddedDate} storage={storageSchema} />
 
         <FooterBlock onResetClick={() => setIsResetOpen(true)} />
 

@@ -1,26 +1,19 @@
-import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { ProgressProvider } from '@/entities/progress';
 import { AboutPage } from '@/pages/about';
 import { HomePage } from '@/pages/home';
 import { TrackPage } from '@/pages/track';
 
 function App() {
-  const [, setStorageUpdateTick] = useState(0);
-
-  const updateStorage = () => {
-    setStorageUpdateTick((value) => value + 1);
-  };
-
   return (
-    <Routes>
-      <Route path="/" element={<HomePage onStorageUpdated={updateStorage} />} />
-      <Route
-        path="/track/:id"
-        element={<TrackPage onStorageUpdated={updateStorage} />}
-      />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <ProgressProvider>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/track/:id" element={<TrackPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ProgressProvider>
   );
 }
 
