@@ -76,7 +76,7 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, []);
+  }, [onEnded, onError]);
 
   const actions: AudioActions = {
     play: () => {

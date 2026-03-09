@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook, screen } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { TrackNavigationProvider, useTrackNavigation } from './TrackNavigationContext';
 import { tracks } from '../config';
