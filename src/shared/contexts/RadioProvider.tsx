@@ -202,6 +202,29 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
     });
   }, [state.currentTrackId, state.totalPlayedTime]);
 
+  const nextTrackAndPlay = useCallback(() => {
+    // Берем случайный трек, отличный от текущего
+    const availableTracks = radioTracks.filter(track => track.id !== state.currentTrackId);
+    const randomIndex = Math.floor(Math.random() * availableTracks.length);
+    const nextTrack = availableTracks[randomIndex];
+    
+    if (!nextTrack) return;
+
+    setState(prev => ({
+      ...prev,
+      currentTrackId: nextTrack.id,
+      currentTime: 0,
+      duration: 0,
+      isPlaying: true, // Устанавливаем флаг воспроизведения
+    }));
+
+    setRadioStorage({
+      currentTrackId: nextTrack.id,
+      playbackStartTime: null,
+      totalPlayedTime: state.totalPlayedTime,
+    });
+  }, [state.currentTrackId, state.totalPlayedTime]);
+
   const openTrackInSuno = useCallback(() => {
     if (currentTrack?.links.suno) {
       window.open(currentTrack.links.suno, '_blank');
@@ -252,7 +275,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
     audioRef.current = audio;
 
     const handleEnded = () => {
-      nextTrack();
+      nextTrackAndPlay();
     };
 
     const handleError = () => {
@@ -296,13 +319,26 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       audio.pause();
       audio.src = '';
     };
-  }, [currentTrack, nextTrack]);
+  }, [currentTrack, nextTrack, nextTrackAndPlay]);
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = state.volume;
     }
   }, [state.volume]);
+
+  useEffect(() => {
+    if (audioRef.current && state.isPlaying && currentTrack) {
+      // Автоматически запускаем воспроизведение если isPlaying=true
+      audioRef.current.play().catch(() => {
+        setState(prev => ({
+          ...prev,
+          isPlaying: false,
+          error: 'Не удалось воспроизвести трек',
+        }));
+      });
+    }
+  }, [state.isPlaying, currentTrack]);
 
   useEffect(() => {
     return () => {
