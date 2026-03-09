@@ -2,10 +2,10 @@
 
 > Интерактивная игра для изучения сербского языка через музыку
 
-![GitHub stars](https://img.shields.io/github/stars/mikhailvarushichev/balkanskikod-quiz?style=social)
-![GitHub forks](https://img.shields.io/github/forks/mikhailvarushichev/balkanskikod-quiz?style=social)
-![GitHub license](https://img.shields.io/github/license/mikhailvarushichev/balkanskikod-quiz)
-![GitHub issues](https://img.shields.io/github/issues/mikhailvarushichev/balkanskikod-quiz)
+![GitHub stars](https://img.shields.io/github/stars/Mikeloangel/balkanskikod-quiz?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Mikeloangel/balkanskikod-quiz?style=social)
+![GitHub license](https://img.shields.io/github/license/Mikeloangel/balkanskikod-quiz)
+![GitHub issues](https://img.shields.io/github/issues/Mikeloangel/balkanskikod-quiz)
 
 ## 🎯 Концепция
 
@@ -70,7 +70,7 @@
 
 ```bash
 # Клонирование
-git clone https://github.com/mikhailvarushichev/balkanskikod-quiz.git
+git clone https://github.com/Mikeloangel/balkanskikod-quiz.git
 cd balkanskikod-quiz
 
 # Установка зависимостей
@@ -198,4 +198,4 @@ MIT License — см. файл [LICENSE](LICENSE)
 
 **Сделано с ❤️ для изучения сербского языка через музыку**
 
-[🎵 Попробовать сейчас](https://mikhailvarushichev.github.io/balkanskikod-quiz/) | [📖 Документация](./docs/) | [🐛 Сообщить о проблеме](https://github.com/mikhailvarushichev/balkanskikod-quiz/issues)
+[🎵 Попробовать сейчас](https://Mikeloangel.github.io/balkanskikod-quiz/) | [📖 Документация](./docs/) | [🐛 Сообщить о проблеме](https://github.com/Mikeloangel/balkanskikod-quiz/issues)
