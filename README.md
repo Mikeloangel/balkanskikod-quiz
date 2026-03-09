@@ -1,73 +1,201 @@
-# React + TypeScript + Vite
+# 🎵 Balkanski kod - Угадай мелодию
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Интерактивная игра для изучения сербского языка через музыку
 
-Currently, two official plugins are available:
+![GitHub stars](https://img.shields.io/github/stars/mikhailvarushichev/balkanskikod-quiz?style=social)
+![GitHub forks](https://img.shields.io/github/forks/mikhailvarushichev/balkanskikod-quiz?style=social)
+![GitHub license](https://img.shields.io/github/license/mikhailvarushichev/balkanskikod-quiz)
+![GitHub issues](https://img.shields.io/github/issues/mikhailvarushichev/balkanskikod-quiz)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🎯 Концепция
 
-## React Compiler
+**Balkanski kod** — это уникальный проект для изучения сербского языка через знакомые мелодии. Вместо скучной зубрежки слов, вы погружаетесь в музыку, уже интуитивно понимая смысл благодаря знакомой мелодии.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> *"Как бы звучали известные песни, если бы их создали в Сербии?"*
 
-## Expanding the ESLint configuration
+### 🎮 Как это работает
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Слушаем мелодию** — знакомая песня на сербском языке
+2. **Угадываем название** — проверяем знания лексики и конструкций
+3. **Используем подсказки** — постепенно раскрываем детали
+4. **Играем радио** — пассивное погружение в язык
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🎵 Особенности
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🧩 Интерактивная игра
+- **Quiz режим** — угадай мелодию по фрагменту
+- **Умные подсказки** — от простого к сложному
+- **Система прогресса** — отслеживай свои достижения
+- **Адаптивная сложность** — 5 уровней сложности
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 📻 Балканское радио
+- **Непрерывное вещание** — случайный порядок треков
+- **Умное управление** — автоматическая пауза при начале игры
+- **Визуальный плеер** — прогресс, громкость, информация о треке
+- **Интеграция с SUNO** — открывай оригиналы
+
+### 🤖 AI-генерация
+- **Умные адаптации** — ChatGPT создает естественные переводы
+- **CLI Wizard** — автоматизация добавления новых треков
+- **Контекстуальная генерация** — сохранение смысла и культурной аутентичности
+
+## 🏗️ Технологии
+
+### Frontend
+- **React 18** + **TypeScript** — современная типизированная разработка
+- **Material-UI** — адаптивный дизайн и компоненты
+- **Vite** — быстрая сборка и разработка
+- **React Router** — навигация с HashRouter для GitHub Pages
+
+### Архитектура
+- **Feature-Sliced Design (FSD)** — модульная структура
+- **React Contexts** — управление состоянием
+- **Zustand** — хранение прогресса
+- **Vitest** — 121 тест для надежности
+
+### Инструменты
+- **CLI Wizard** — PHP скрипт для генерации треков
+- **OpenAI API** — создание адаптаций текстов
+- **GitHub Actions** — автоматический деплой
+- **ESLint + Prettier** — код-стайл
+
+## 🚀 Быстрый старт
+
+### Требования
+- Node.js 18+
+- npm или yarn
+- OpenAI API ключ (для генерации треков)
+
+### Установка
+
+```bash
+# Клонирование
+git clone https://github.com/mikhailvarushichev/balkanskikod-quiz.git
+cd balkanskikod-quiz
+
+# Установка зависимостей
+npm install
+
+# Настройка переменных окружения
+cp .env.example .env
+# Добавьте OPENAI_API_KEY в .env
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Запуск
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Разработка
+npm run dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Сборка
+npm run build
+
+# Тесты
+npm test
+
+# Линтинг
+npm run lint
 ```
+
+### Добавление новых треков
+
+```bash
+# Запуск мастера добавления треков
+php cli/wizard.php
+```
+
+## 📚 Структура проекта
+
+```
+src/
+├── shared/          # Общая логика
+│   ├── contexts/     # React Contexts
+│   ├── config/       # Конфигурация треков
+│   ├── models/       # TypeScript типы
+│   └── lib/          # Утилиты
+├── entities/         # Бизнес-логика
+│   └── progress/     # Управление прогрессом
+├── widgets/          # UI компоненты
+│   └── radioPlayer/  # Радио плеер
+├── pages/            # Страницы приложения
+└── app/              # Точка входа
+```
+
+## 🎯 Методология изучения
+
+### Почему это работает?
+
+1. **Эмоциональная память** — музыка создает сильные ассоциации
+2. **Контекстное понимание** — знаешь мелодию → легче понять текст
+3. **Мультисенсорность** — аудио + визуальный + интерактивный опыт
+4. **Пассивное погружение** — радио фоном = постоянный контакт с языком
+
+### Пример адаптации
+
+**Оригинал (русский):**
+> "С любимыми не расставайтесь"
+
+**Адаптация (сербский):**
+> "Не растајте се с вољенима"
+
+Сохраняется смысл, но используется естественная для сербского языка конструкция.
+
+## 🤝 Вклад в проект
+
+### Как добавить трек
+
+1. **Используйте CLI wizard** — автоматическая генерация
+2. **Ручное добавление** — редактирование конфигурационных файлов
+3. **Предложения** — откройте issue с идеями
+
+### Требования к трекам
+
+- **Качественный аудиофайл** — MP3, 128kbps+
+- **Сербская версия** — естественная адаптация
+- **Метаданные** — исполнитель, название, обложка
+- **Сложность** — оценка от 1 до 5
+
+## 📊 Статистика
+
+- 🎵 **Треков в базе:** 11+
+- 🧪 **Тестов:** 121
+- 📱 **Адаптивный дизайн:** Desktop + Mobile
+- 🎯 **Уровней сложности:** 5
+- ⏱️ **Ограничение радио:** 30 минут
+
+## 🛣️ Дорожная карта
+
+### v1.0 (текущая)
+- ✅ Базовая игра
+- ✅ Радио плеер
+- ✅ AI генерация
+- ✅ Адаптивный дизайн
+
+### v1.1 (в планах)
+- 📊 Статистика прослушиваний
+- 🎙️ Подкасты RSS
+- 📅 Расписание программ
+- 👥 Мультиплеер
+
+### v2.0 (будущее)
+- 🎥 Видеоклипы
+- 🌐 Мультиязычность
+- 🤖 AI ведущий
+- 📱 Мобильное приложение
+
+## 📄 Лицензия
+
+MIT License — см. файл [LICENSE](LICENSE)
+
+## 🙏 Благодарности
+
+- **ChatGPT** — за адаптацию текстов и культурную экспертизу
+- **SUNO AI** — за генерацию музыки
+- **Одногруппникам** — за тестирование и фидбек
+- **Сербской культуре** — за вдохновение
+
+---
+
+**Сделано с ❤️ для изучения сербского языка через музыку**
+
+[🎵 Попробовать сейчас](https://mikhailvarushichev.github.io/balkanskikod-quiz/) | [📖 Документация](./docs/) | [🐛 Сообщить о проблеме](https://github.com/mikhailvarushichev/balkanskikod-quiz/issues)
