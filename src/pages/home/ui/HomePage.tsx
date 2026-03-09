@@ -4,6 +4,7 @@ import { tracksSortedByAddedDate } from '@/shared/config';
 import { useProgressStore, selectGlobalStats, selectLastSolved } from '@/entities/progress';
 import type { StorageSchema } from '@/entities/progress';
 import { shareLink } from '@/shared/lib/share';
+import { RadioWidget } from '@/widgets/radioPlayer';
 import { HeaderBlock } from './elements/HeaderBlock';
 import { StatsBlock } from './elements/StatsBlock';
 import { LastSolvedBlock } from './elements/LastSolvedBlock';
@@ -75,40 +76,44 @@ export const HomePage = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Stack spacing={3}>
-        <HeaderBlock
-          title="Balkanski kod"
-          onShareClick={() => {
-            setShareFeedback(null);
-            setIsShareOpen(true);
-          }}
-        />
+    <>
+      <Container maxWidth="lg" sx={{ py: 4, pb: 18 }}>
+        <Stack spacing={3}>
+          <HeaderBlock
+            title="Balkanski kod"
+            onShareClick={() => {
+              setShareFeedback(null);
+              setIsShareOpen(true);
+            }}
+          />
 
-        <StatsBlock stats={stats} />
+          <StatsBlock stats={stats} />
 
-        <LastSolvedBlock lastSolved={lastSolved} />
+          <LastSolvedBlock lastSolved={lastSolved} />
 
-        <TracksListBlock tracks={tracksSortedByAddedDate} storage={storageSchema} />
+          <TracksListBlock tracks={tracksSortedByAddedDate} storage={storageSchema} />
 
-        <FooterBlock onResetClick={() => setIsResetOpen(true)} />
+          <FooterBlock onResetClick={() => setIsResetOpen(true)} />
 
-        <ShareDialog
-          open={isShareOpen}
-          onClose={() => setIsShareOpen(false)}
-          sharePayload={sharePayload}
-          hasWebShare={hasWebShare}
-          onShare={handleShare}
-          onManualCopy={handleManualCopy}
-          feedback={shareFeedback}
-        />
+          <ShareDialog
+            open={isShareOpen}
+            onClose={() => setIsShareOpen(false)}
+            sharePayload={sharePayload}
+            hasWebShare={hasWebShare}
+            onShare={handleShare}
+            onManualCopy={handleManualCopy}
+            feedback={shareFeedback}
+          />
 
-        <ResetDialog
-          open={isResetOpen}
-          onClose={() => setIsResetOpen(false)}
-          onReset={handleReset}
-        />
-      </Stack>
-    </Container>
+          <ResetDialog
+            open={isResetOpen}
+            onClose={() => setIsResetOpen(false)}
+            onReset={handleReset}
+          />
+        </Stack>
+      </Container>
+      
+      <RadioWidget />
+    </>
   );
 };

@@ -23,13 +23,18 @@
 
 *Организованы согласно FSD: каждый слой/срез экспортирует API через `index.ts`.*
 
-- `src/shared/config/tracks.ts` — каталог треков.
+- `src/shared/config/tracks.ts` — каталог треков для игры.
+- `src/shared/config/radioTracks.ts` — каталог треков для радио.
 - `src/shared/lib/text.ts` — нормализация, checkAnswer, partial match.
 - `src/shared/contexts/` — React Contexts для управления состоянием:
-  - `provider.tsx` — AudioProvider (аудио плеер)
+  - `provider.tsx` — AudioProvider (аудио плеер игры)
+  - `RadioProvider.tsx` — RadioProvider (аудио плеер радио)
   - `UIDialogsContext.tsx` — управление диалогами (share, give up)
   - `TrackNavigationContext.tsx` — навигация между треками
   - `TrackGameUIContext.tsx` — сложная UI логика игры
+- `src/shared/radio/` — shared типы и storage для радио:
+  - `types/radioTrack.ts` — RadioTrack, RadioState, RadioStorage типы
+  - `types/storage.ts` — localStorage функции для радио
 - `src/shared/models/` — shared типы для соблюдения FSD:
   - `progress.ts` — TrackProgress типы
   - `track.ts` — Track типы
@@ -37,6 +42,12 @@
   - `model/storage.ts` — работа с localStorage.
   - `model/stats.ts` — вычисление статистики и "нового".
   - `store/` — Zustand store для прогресса.
+- `src/widgets/radioPlayer/` — виджет радио:
+  - `ui/RadioWidget.tsx` — основной виджет с адаптивной версткой
+  - `ui/TrackInfo.tsx` — информация о треке и кнопка SUNO
+  - `ui/PlayControls.tsx` — кнопка Play/Pause
+  - `ui/VolumeControl.tsx` — регулятор громкости с умными кнопками
+  - `ui/ProgressBar.tsx` — визуальный прогресс-бар без перемотки
 - `src/pages/home/ui/HomePage.tsx` — главная.
 - `src/pages/track/ui/TrackPage.tsx` — игра/трек.
 - `src/pages/about/ui/AboutPage.tsx` — о проекте.
@@ -44,14 +55,22 @@
 - `docs/260307-balkanski-kod-tz-mvp.md` — базовое ТЗ.
 - `docs/260309-refactor-contexts.md` — рефакторинг контекстов.
 - `docs/260308-updates.md` — фактические изменения поверх ТЗ.
+- `docs/260310-radio-balkan.md` — ТЗ для радио виджета.
 
 ### 3.2. Контекстная архитектура
 
 Проект использует современную архитектуру React Contexts для разделения состояния:
 
-**AudioContext** — управление аудио плеером:
+**AudioContext** — управление аудио плеером игры:
 - `isPlaying`, `currentTime`, `duration`, `error`, `inputValue`
 - `play()`, `pause()`, `setCurrentTime()`, `setError()`, `setInputValue()`
+
+**RadioProvider** — управление радио плеером:
+- `isPlaying`, `currentTime`, `duration`, `volume`, `error`
+- `play()`, `pause()`, `setVolume()`, `nextTrack()`, `openTrackInSuno()`
+- Случайный порядок треков с сохранением в localStorage
+- Автоматическая пауза при запуске игрового трека
+- Ограничение 30 минут прослушивания
 
 **UIDialogsContext** — управление модальными окнами:
 - `isShareOpen`, `isGiveUpOpen`, `shareFeedback`, `startedProgressSignature`
@@ -66,7 +85,25 @@
 - `canUseHint`, `openedHints`, `attemptsForView`, `difficultyStars`
 - `pageTitle`, `shouldShowTrackNavigation`
 
+### 3.3. Радио архитектура
+
+**RadioProvider** — контекст для управления радио:
+- Использует `resolveLocalTrackUrl()` для корректных путей с `BASE_URL`
+- Сохраняет состояние в `localStorage` с ключом `balkanski-kod-radio-state`
+- Поддерживает случайный порядок треков
+- Автоматически переключает треки по окончании
+- Интегрирован с игровым плеером (пауза радио при запуске игры)
+
+**Виджет радио** — фиксированный виджет внизу экрана:
+- Адаптивная верстка: 1 строка на десктопе, 2 строки на мобильных
+- Play/Pause, информация о треке, кнопка SUNO
+- Регулятор громкости с умными кнопками (mute/unmute)
+- Визуальный прогресс-бар без возможности перемотки
+- Стилизован в едином дизайне с остальным интерфейсом
+
 ## 4. Правила добавления треков
+
+### 4.1. Игровые треки
 
 При добавлении нового трека в `src/shared/config/tracks.ts`:
 
@@ -76,6 +113,17 @@
 - `names.safe` не должен прямо палить разгадку;
 - `hints` — от менее явной к более явной;
 - `difficulty` — целое 1..5;
+- `dates.added` — `YYYY-MM-DD`.
+
+### 4.2. Радио треки
+
+При добавлении нового трека в `src/shared/config/radioTracks.ts`:
+
+- строго соблюдать контракт `RadioTrack`;
+- `id` в формате `track-XXX` и уникален;
+- `links.local` должен соответствовать фактическому файлу в `public/tracks/`;
+- `links.suno` — ссылка на трек в Suno;
+- `names.serbian`, `names.russian`, `names.original` — названия на разных языках;
 - `dates.added` — `YYYY-MM-DD`.
 
 Для генерации контента можно использовать `cli/wizard.php` с OpenAI API.
@@ -97,6 +145,7 @@
 
 - `VITE_APP_NAME`
 - `VITE_APP_BASE_URL`
+- `VITE_RADIO_MAX_PLAY_TIME_MINUTES` (по умолчанию 30)
 
 Скрипты деплоя:
 
@@ -106,22 +155,25 @@
 ## 7. Тестирование
 
 ### 7.1. Запуск тестов
-- `npm test` — все тесты (107 тестов)
+- `npm test` — все тесты (122 теста)
 - `npm run test:ui` — UI режим Vitest
 - `npm run test:coverage` — покрытие кода
 
 ### 7.2. Структура тестов
 - Unit тесты для всех контекстов в `src/shared/contexts/*.test.tsx`
 - Unit тесты для доменной логики в `src/shared/lib/*.test.ts`
+- Unit тесты для storage в `src/shared/radio/types/*.test.ts`
 - Unit тесты для storage в `src/entities/progress/model/*.test.ts`
 - Тесты для store в `src/entities/progress/store/*.test.ts`
 
 ### 7.3. Покрытие
 - AudioContext: 7 тестов
+- RadioProvider: 8 тестов
 - UIDialogsContext: 7 тестов  
 - TrackNavigationContext: 5 тестов
 - TrackGameUIContext: 7 тестов
 - Доменная логика: 30 тестов
+- Radio storage: 7 тестов
 - Storage/Store: 51 тест
 
 ## 8. Перед завершением любой задачи
@@ -139,4 +191,6 @@
 - Не добавлять backend/авторизацию в рамках текущего MVP-репозитория.
 - Не ломать контекстную архитектуру без необходимости.
 - Не добавлять новые состояния в TrackPage напрямую — используйте контексты.
+- Не добавлять возможность перемотки в радио (это радио, не плеер).
+- Не менять случайный порядок треков на последовательный без запроса.
 

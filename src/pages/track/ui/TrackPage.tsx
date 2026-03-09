@@ -4,7 +4,8 @@ import { tracks } from '@/shared/config';
 import type { Track } from '@/shared/models';
 import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
 import { useProgressStore, selectTrackProgress } from '@/entities/progress';
-import { useAudioState, useAudioActions, useUIDialogs, useTrackNavigation, useTrackGameUI, TrackNavigationProvider, TrackGameUIProvider, AudioProvider } from '@/shared/contexts';
+import { useAudioState, useAudioActions, useUIDialogs, useTrackNavigation, useTrackGameUI, TrackNavigationProvider, TrackGameUIProvider, AudioProvider, useRadio } from '@/shared/contexts';
+import { RadioWidget } from '@/widgets/radioPlayer';
 import { AttemptsHistoryBlock } from './elements/AttemptsHistoryBlock';
 import { AudioPlayerBlock } from './elements/AudioPlayerBlock';
 import { GiveUpDialog } from './elements/GiveUpDialog';
@@ -68,6 +69,12 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
   const { state: dialogsState, actions: dialogsActions } = useUIDialogs();
   const { state: navigationState } = useTrackNavigation();
   const { state: gameUIState } = useTrackGameUI();
+  const { pause: pauseRadio } = useRadio();
+
+  // Пауза радио при запуске игрового трека
+  const handlePlayGameTrack = () => {
+    pauseRadio();
+  };
 
   const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Balkanski kod';
   const configuredBaseUrl = import.meta.env.VITE_APP_BASE_URL?.trim();
@@ -161,79 +168,84 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-          <Stack spacing={2.5}>
-            <TrackPageHeader pageTitle={gameUIState.pageTitle} />
+    <>
+      <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
+            <Stack spacing={2.5}>
+              <TrackPageHeader pageTitle={gameUIState.pageTitle} />
 
-            <TrackResultShell variant={shellVariant} animate={audioState.isPlaying}>
-              <Stack spacing={2}>
-                <TrackMetaBlock
-                  pageTitle={gameUIState.pageTitle}
-                  showSolvedIcon={gameUIState.isSolved}
-                  difficultyStars={gameUIState.difficultyStars}
-                  showNavigation={gameUIState.shouldShowTrackNavigation}
-                  previousTrack={navigationState.previousTrack ? { id: navigationState.previousTrack.id } : null}
-                  nextTrack={navigationState.nextTrack ? { id: navigationState.nextTrack.id } : null}
-                  openedHints={gameUIState.openedHints}
-                  revealedSerbianTitle={progress.revealedSerbianTitle}
-                  serbianTitle={track.names.serbian}
-                />
-
-                <AudioPlayerBlock
-                  isFinished={gameUIState.isFinished}
-                  formatAudioTime={formatAudioTime}
-                />
-
-                {!gameUIState.isFinished && !gameUIState.shouldShowStartCta ? (
-                  <GuessFormBlock
-                    attemptNumber={progress.attemptsCount + 1}
-                    value={audioState.inputValue}
-                    onChange={audioActions.setInputValue}
-                    onSubmit={handleSubmit}
-                    showHintButton={gameUIState.canShowHintButton}
-                    hintButtonLabel={gameUIState.canUseHint ? 'Подсказка' : 'Показать сербское название'}
-                    onHint={handleHint}
-                    onGiveUp={handleOpenGiveUp}
-                  />
-                ) : null}
-
-                {gameUIState.isFinished ? (
-                  <ResultCardBlock
-                    isSolved={gameUIState.isSolved}
-                    serbianTitle={track.names.serbian}
-                    russianTitle={track.names.russian}
-                    originalTitle={track.names.original}
-                    attemptsCount={progress.attemptsCount}
-                    hintsUsedCount={progress.hintsUsedCount}
+              <TrackResultShell variant={shellVariant} animate={audioState.isPlaying}>
+                <Stack spacing={2}>
+                  <TrackMetaBlock
+                    pageTitle={gameUIState.pageTitle}
+                    showSolvedIcon={gameUIState.isSolved}
+                    difficultyStars={gameUIState.difficultyStars}
+                    showNavigation={gameUIState.shouldShowTrackNavigation}
+                    previousTrack={navigationState.previousTrack ? { id: navigationState.previousTrack.id } : null}
+                    nextTrack={navigationState.nextTrack ? { id: navigationState.nextTrack.id } : null}
+                    openedHints={gameUIState.openedHints}
                     revealedSerbianTitle={progress.revealedSerbianTitle}
-                    sunoUrl={sharePayload.url}
-                    onOpenShare={handleOpenShare}
+                    serbianTitle={track.names.serbian}
                   />
-                ) : null}
 
-                <AttemptsHistoryBlock
-                  attemptsForView={gameUIState.attemptsForView}
-                  attemptsCount={progress.attemptsCount}
-                  track={track}
-                />
-              </Stack>
-            </TrackResultShell>
-          </Stack>
+                  <AudioPlayerBlock
+                    isFinished={gameUIState.isFinished}
+                    formatAudioTime={formatAudioTime}
+                    onPlay={handlePlayGameTrack}
+                  />
 
-          <ShareDialog
-            open={dialogsState.isShareOpen}
-            onClose={handleCloseShare}
-            payload={sharePayload}
-            hasWebShare={hasWebShare}
-            feedback={dialogsState.shareFeedback}
-            onCopy={handleManualCopy}
-          />
+                  {!gameUIState.isFinished && !gameUIState.shouldShowStartCta ? (
+                    <GuessFormBlock
+                      attemptNumber={progress.attemptsCount + 1}
+                      value={audioState.inputValue}
+                      onChange={audioActions.setInputValue}
+                      onSubmit={handleSubmit}
+                      showHintButton={gameUIState.canShowHintButton}
+                      hintButtonLabel={gameUIState.canUseHint ? 'Подсказка' : 'Показать сербское название'}
+                      onHint={handleHint}
+                      onGiveUp={handleOpenGiveUp}
+                    />
+                  ) : null}
 
-          <GiveUpDialog
-            open={dialogsState.isGiveUpOpen}
-            onClose={handleCloseGiveUp}
-            onConfirm={handleGiveUp}
-          />
-        </Container>
+                  {gameUIState.isFinished ? (
+                    <ResultCardBlock
+                      isSolved={gameUIState.isSolved}
+                      serbianTitle={track.names.serbian}
+                      russianTitle={track.names.russian}
+                      originalTitle={track.names.original}
+                      attemptsCount={progress.attemptsCount}
+                      hintsUsedCount={progress.hintsUsedCount}
+                      revealedSerbianTitle={progress.revealedSerbianTitle}
+                      sunoUrl={sharePayload.url}
+                      onOpenShare={handleOpenShare}
+                    />
+                  ) : null}
+
+                  <AttemptsHistoryBlock
+                    attemptsForView={gameUIState.attemptsForView}
+                    attemptsCount={progress.attemptsCount}
+                    track={track}
+                  />
+                </Stack>
+              </TrackResultShell>
+            </Stack>
+
+            <ShareDialog
+              open={dialogsState.isShareOpen}
+              onClose={handleCloseShare}
+              payload={sharePayload}
+              hasWebShare={hasWebShare}
+              feedback={dialogsState.shareFeedback}
+              onCopy={handleManualCopy}
+            />
+
+            <GiveUpDialog
+              open={dialogsState.isGiveUpOpen}
+              onClose={handleCloseGiveUp}
+              onConfirm={handleGiveUp}
+            />
+          </Container>
+          
+          <RadioWidget />
+        </>
   );
 };

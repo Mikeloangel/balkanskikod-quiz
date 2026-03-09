@@ -13,11 +13,13 @@ import { useAudioState } from '@/shared/contexts';
 type AudioPlayerBlockProps = {
   isFinished: boolean;
   formatAudioTime: (value: number) => string;
+  onPlay?: () => void;
 };
 
 export const AudioPlayerBlock = ({
   isFinished,
   formatAudioTime,
+  onPlay,
 }: AudioPlayerBlockProps) => {
   const { state, actions } = useAudioState();
 
@@ -25,11 +27,13 @@ export const AudioPlayerBlock = ({
     if (state.isPlaying) {
       actions.pause();
     } else {
+      onPlay?.();
       actions.play();
     }
   };
 
   const handleRestart = () => {
+    onPlay?.();
     actions.setCurrentTime(0);
     actions.play();
   };
