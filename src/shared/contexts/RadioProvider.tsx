@@ -10,7 +10,6 @@ interface RadioContextType {
   pause: () => void;
   setVolume: (volume: number) => void;
   nextTrack: () => void;
-  previousTrack: () => void;
   openTrackInSuno: () => void;
   resetError: () => void;
 }
@@ -192,27 +191,6 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children }) => {
     });
   }, [state.currentTrackId, state.totalPlayedTime]);
 
-  const previousTrack = useCallback(() => {
-    const currentIndex = radioTracks.findIndex(track => track.id === state.currentTrackId);
-    const prevIndex = currentIndex > 0 
-      ? currentIndex - 1 
-      : radioTracks.length - 1;
-    
-    const prevTrack = radioTracks[prevIndex];
-    setState(prev => ({
-      ...prev,
-      currentTrackId: prevTrack.id,
-      currentTime: 0,
-      duration: 0,
-    }));
-
-    setRadioStorage({
-      currentTrackId: prevTrack.id,
-      playbackStartTime: null,
-      totalPlayedTime: state.totalPlayedTime,
-    });
-  }, [state.currentTrackId, state.totalPlayedTime]);
-
   const openTrackInSuno = useCallback(() => {
     if (currentTrack?.links.suno) {
       window.open(currentTrack.links.suno, '_blank');
@@ -333,7 +311,6 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children }) => {
     pause,
     setVolume,
     nextTrack,
-    previousTrack,
     openTrackInSuno,
     resetError,
   };

@@ -152,19 +152,6 @@ describe('RadioProvider', () => {
     expect(newTrack).not.toBe(initialTrack);
   });
 
-  it('should handle previous track', async () => {
-    const { result } = renderHook(() => useRadio(), { wrapper });
-    
-    const initialTrack = result.current.currentTrack?.id;
-    
-    await act(async () => {
-      result.current.previousTrack();
-    });
-    
-    const newTrack = result.current.currentTrack?.id;
-    expect(newTrack).not.toBe(initialTrack);
-  });
-
   it('should throw error when useRadio is used outside provider', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
