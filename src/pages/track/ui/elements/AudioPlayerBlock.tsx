@@ -1,4 +1,3 @@
-import type { RefObject } from 'react';
 import {
   Alert,
   Box,
@@ -9,94 +8,74 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useAudioState } from '@/shared/contexts';
 
 type AudioPlayerBlockProps = {
-  audioRef: RefObject<HTMLAudioElement | null>;
-  src: string;
-  audioError: string;
-  onAudioError: (message: string) => void;
-  onLoadedMetadata: () => void;
-  onTimeUpdate: () => void;
-  onPlay: () => void;
-  onPause: () => void;
-  onEnded: () => void;
-  isPlaying: boolean;
-  onTogglePlayback: () => void;
-  onRestart: () => void;
   isFinished: boolean;
-  canSeek: boolean;
-  audioDuration: number;
-  audioCurrentTime: number;
-  onSeek: (_: Event, value: number | number[]) => void;
   formatAudioTime: (value: number) => string;
 };
 
 export const AudioPlayerBlock = ({
-  audioRef,
-  src,
-  audioError,
-  onAudioError,
-  onLoadedMetadata,
-  onTimeUpdate,
-  onPlay,
-  onPause,
-  onEnded,
-  isPlaying,
-  onTogglePlayback,
-  onRestart,
   isFinished,
-  canSeek,
-  audioDuration,
-  audioCurrentTime,
-  onSeek,
   formatAudioTime,
-}: AudioPlayerBlockProps) => (
-  <>
-    {audioError ? <Alert severity="error">{audioError}</Alert> : null}
-    <audio
-      ref={audioRef}
-      src={src}
-      preload="none"
-      onLoadedMetadata={onLoadedMetadata}
-      onTimeUpdate={onTimeUpdate}
-      onPlay={onPlay}
-      onPause={onPause}
-      onEnded={onEnded}
-      onError={() => onAudioError('MP3 не загрузился. Проверь путь к файлу в public/tracks.')}
-    />
+}: AudioPlayerBlockProps) => {
+  const { state, actions } = useAudioState();
 
-    <Paper variant="outlined" sx={{ p: 1 }}>
-      <Stack spacing={1}>
-        <ButtonGroup fullWidth variant="contained" aria-label="Управление плеером">
-          <Button onClick={onTogglePlayback}>{isPlaying ? 'Пауза' : 'Старт'}</Button>
-          <Button color="secondary" onClick={onRestart}>
-            С начала
-          </Button>
-        </ButtonGroup>
+  const handleTogglePlayback = () => {
+    if (state.isPlaying) {
+      actions.pause();
+    } else {
+      actions.play();
+    }
+  };
 
-        {isFinished ? (
-          <Box>
-            <Slider
-              size="small"
-              min={0}
-              max={audioDuration || 1}
-              step={0.1}
-              value={Math.min(audioCurrentTime, audioDuration || 1)}
-              onChange={onSeek}
-              disabled={!canSeek}
-            />
-            <Stack direction="row" justifyContent="space-between">
-              <Typography variant="caption" color="text.secondary">
-                {formatAudioTime(audioCurrentTime)}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {formatAudioTime(audioDuration)}
-              </Typography>
-            </Stack>
-          </Box>
-        ) : null}
-      </Stack>
-    </Paper>
-  </>
-);
+  const handleRestart = () => {
+    actions.setCurrentTime(0);
+    actions.play();
+  };
 
+  const handleSeek = (_: Event, value: number | number[]) => {
+    const seekTime = Array.isArray(value) ? value[0] : value;
+    actions.setCurrentTime(seekTime);
+  };
+
+  return (
+    <>
+      {state.error ? <Alert severity="error">{state.error}</Alert> : null}
+      <Paper variant="outlined" sx={{ p: 1 }}>
+        <Stack spacing={1}>
+          <ButtonGroup fullWidth variant="contained" aria-label="Управление плеером">
+            <Button onClick={handleTogglePlayback}>
+              {state.isPlaying ? 'Пауза' : 'Старт'}
+            </Button>
+            <Button color="secondary" onClick={handleRestart}>
+              С начала
+            </Button>
+          </ButtonGroup>
+
+          {isFinished ? (
+            <Box>
+              <Slider
+                size="small"
+                min={0}
+                max={state.duration || 1}
+                step={0.1}
+                value={Math.min(state.currentTime, state.duration || 1)}
+                onChange={handleSeek}
+                disabled={state.duration <= 0}
+              />
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="caption" color="text.secondary">
+                  {formatAudioTime(state.currentTime)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {formatAudioTime(state.duration)}
+                </Typography>
+              </Stack>
+            </Box>
+          ) : null}
+        </Stack>
+      </Paper>
+    </>
+  );
+};
