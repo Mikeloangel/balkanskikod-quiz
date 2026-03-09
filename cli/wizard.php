@@ -10,10 +10,11 @@ declare(strict_types=1);
  * - reads OPENAI_API_KEY and OPENAI_MODEL from .env
  * - sends prompt to OpenAI
  * - generates names.safe and hints
- * - prints full JSON and TS-like object
+ * - asks where to add the track (quiz/radio/both)
+ * - updates appropriate config files
  *
  * Usage:
- *   php track_wizard.php
+ *   php wizard.php
  *
  * .env example:
  *   OPENAI_API_KEY=
@@ -91,7 +92,8 @@ function main(): void
         exit(1);
     }
 
-    $track = [
+    // Build full track data
+    $fullTrack = [
         'id' => $id,
         'links' => [
             'local' => $localPath,
@@ -110,11 +112,150 @@ function main(): void
         ],
     ];
 
-    echo "=== RESULT JSON ===\n";
-    echo json_encode($track, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+    // Build radio track data (only radio-specific fields)
+    $radioTrack = [
+        'id' => $id,
+        'links' => [
+            'local' => $localPath,
+            'suno' => $suno,
+        ],
+        'names' => [
+            'serbian' => $serbian,
+            'russian' => $russian,
+            'original' => $original,
+        ],
+        'dates' => [
+            'added' => $added,
+        ],
+    ];
 
-    echo "=== RESULT TS OBJECT ===\n";
-    echo renderTsTrackObject($track) . "\n";
+    echo "=== RESULT QUIZ TRACK ===\n";
+    echo json_encode($fullTrack, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+
+    echo "=== RESULT RADIO TRACK ===\n";
+    echo json_encode($radioTrack, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+
+    // Ask where to add the track
+    echo "=== WHERE TO ADD TRACK ===\n";
+    
+    $addToQuiz = askYesNo('Add to quiz (tracks.ts)?', 'y');
+    $addToRadio = askYesNo('Add to radio (radioTracks.ts)?', 'y');
+
+    if ($addToQuiz) {
+        addToQuizConfig($fullTrack);
+        echo "✅ Added to quiz config\n";
+    }
+
+    if ($addToRadio) {
+        addToRadioConfig($radioTrack);
+        echo "✅ Added to radio config\n";
+    }
+
+    if (!$addToQuiz && !$addToRadio) {
+        echo "⚠️  Track not added to any config\n";
+    }
+
+    echo "\n=== TS OBJECTS FOR REFERENCE ===\n";
+    echo "Quiz track:\n";
+    echo renderTsTrackObject($fullTrack) . "\n\n";
+    
+    echo "Radio track:\n";
+    echo renderTsRadioTrackObject($radioTrack) . "\n";
+}
+
+function addToQuizConfig(array $track): void
+{
+    $configPath = __DIR__ . '/../src/shared/config/tracks.ts';
+    
+    if (!is_file($configPath)) {
+        throw new RuntimeException("Quiz config file not found: {$configPath}");
+    }
+
+    $content = file_get_contents($configPath);
+    if ($content === false) {
+        throw new RuntimeException("Failed to read quiz config file");
+    }
+
+    // Find the position to insert the new track (before the closing ];)
+    $insertPos = strrpos($content, '];');
+    if ($insertPos === false) {
+        throw new RuntimeException("Could not find tracks array end in quiz config");
+    }
+
+    // Check if we need to add a comma to the last track
+    $contentBefore = substr($content, 0, $insertPos);
+    $contentBefore = trim($contentBefore);
+    if (!str_ends_with($contentBefore, ',')) {
+        $contentBefore .= ',';
+        $insertPos = strlen($contentBefore);
+    }
+
+    $newTrack = renderTsTrackObject($track);
+    $newContent = substr($content, 0, $insertPos) . "\n  " . $newTrack . "\n" . substr($content, $insertPos);
+
+    if (file_put_contents($configPath, $newContent) === false) {
+        throw new RuntimeException("Failed to write quiz config file");
+    }
+}
+
+function addToRadioConfig(array $track): void
+{
+    $configPath = __DIR__ . '/../src/shared/config/radioTracks.ts';
+    
+    if (!is_file($configPath)) {
+        throw new RuntimeException("Radio config file not found: {$configPath}");
+    }
+
+    $content = file_get_contents($configPath);
+    if ($content === false) {
+        throw new RuntimeException("Failed to read radio config file");
+    }
+
+    // Find the position to insert the new track (before the closing ];)
+    $insertPos = strrpos($content, '];');
+    if ($insertPos === false) {
+        throw new RuntimeException("Could not find radio tracks array end in radio config");
+    }
+
+    // Check if we need to add a comma to the last track
+    $contentBefore = substr($content, 0, $insertPos);
+    $contentBefore = trim($contentBefore);
+    if (!str_ends_with($contentBefore, ',')) {
+        $contentBefore .= ',';
+        $insertPos = strlen($contentBefore);
+    }
+
+    $newTrack = renderTsRadioTrackObject($track);
+    $newContent = substr($content, 0, $insertPos) . "\n  " . $newTrack . "\n" . substr($content, $insertPos);
+
+    if (file_put_contents($configPath, $newContent) === false) {
+        throw new RuntimeException("Failed to write radio config file");
+    }
+}
+
+function askYesNo(string $label, string $default = 'y'): bool
+{
+    while (true) {
+        $suffix = $default !== '' ? " [{$default}]" : '';
+        fwrite(STDOUT, $label . $suffix . ': ');
+
+        $line = fgets(STDIN);
+        $value = $line === false ? '' : strtolower(trim($line));
+
+        if ($value === '') {
+            $value = $default;
+        }
+
+        if ($value === 'y' || $value === 'yes') {
+            return true;
+        }
+
+        if ($value === 'n' || $value === 'no') {
+            return false;
+        }
+
+        echo "Please enter 'y' or 'n'.\n";
+    }
 }
 
 function loadEnv(string $path): array
@@ -462,6 +603,28 @@ function renderTsTrackObject(array $track): string
 
     $export[] = '  ],';
     $export[] = '  difficulty: ' . (int) $track['difficulty'] . ',';
+    $export[] = '  dates: {';
+    $export[] = "    added: '" . escapeTsString((string) $track['dates']['added']) . "',";
+    $export[] = '  },';
+    $export[] = '},';
+
+    return implode("\n", $export);
+}
+
+function renderTsRadioTrackObject(array $track): string
+{
+    $export = [];
+    $export[] = '{';
+    $export[] = "  id: '" . escapeTsString((string) $track['id']) . "',";
+    $export[] = '  links: {';
+    $export[] = "    local: '" . escapeTsString((string) $track['links']['local']) . "',";
+    $export[] = "    suno: '" . escapeTsString((string) $track['links']['suno']) . "',";
+    $export[] = '  },';
+    $export[] = '  names: {';
+    $export[] = "    serbian: '" . escapeTsString((string) $track['names']['serbian']) . "',";
+    $export[] = "    russian: '" . escapeTsString((string) $track['names']['russian']) . "',";
+    $export[] = "    original: '" . escapeTsString((string) $track['names']['original']) . "',";
+    $export[] = '  },';
     $export[] = '  dates: {';
     $export[] = "    added: '" . escapeTsString((string) $track['dates']['added']) . "',";
     $export[] = '  },';

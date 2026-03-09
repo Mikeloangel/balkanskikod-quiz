@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useRef, useEffect, type ReactNode } from 'react';
 import type { AudioActions, AudioContextType } from './audioTypes';
+import { registerGameAudio } from './AudioControlContext';
 
 const AudioContext = createContext<AudioContextType | null>(null);
 
@@ -39,6 +40,11 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({
     const audio = audioRef.current;
     if (!audio) return;
 
+    // Регистрируем аудио элемент для управления извне
+    registerGameAudio({
+      pause: () => audio.pause(),
+    });
+
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
     };
@@ -75,6 +81,9 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({
       audio.removeEventListener('pause', handlePause);
       audio.removeEventListener('error', handleError);
       audio.removeEventListener('ended', handleEnded);
+      
+      // Отчищаем ссылку при размонтировании
+      registerGameAudio(null as any);
     };
   }, [onEnded, onError]);
 

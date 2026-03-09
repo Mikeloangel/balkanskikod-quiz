@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { RadioProvider, useRadio } from './RadioProvider';
+import { AudioControlProvider } from './AudioControlContext';
 import { getRadioStorage, setRadioStorage } from '@/shared/radio';
 import { radioTracks } from '@/shared/config/radioTracks';
 
@@ -76,7 +77,9 @@ describe('RadioProvider', () => {
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <RadioProvider>{children}</RadioProvider>
+    <AudioControlProvider>
+      <RadioProvider>{children}</RadioProvider>
+    </AudioControlProvider>
   );
 
   it('should initialize with default state', () => {

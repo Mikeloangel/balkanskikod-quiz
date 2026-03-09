@@ -11,6 +11,7 @@ import { AudioPlayerBlock } from './elements/AudioPlayerBlock';
 import { GiveUpDialog } from './elements/GiveUpDialog';
 import { GuessFormBlock } from './elements/GuessFormBlock';
 import { ResultCardBlock } from './elements/ResultCardBlock';
+import { StartGuessingCta } from './elements/StartGuessingCta';
 import { ShareDialog } from './elements/ShareDialog';
 import { TrackMetaBlock } from './elements/TrackMetaBlock';
 import { TrackNotFound } from './elements/TrackNotFound';
@@ -74,6 +75,17 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
   // Пауза радио при запуске игрового трека
   const handlePlayGameTrack = () => {
     pauseRadio();
+    
+    // Устанавливаем startedProgressSignature чтобы скрыть Start CTA
+    const progressSignature = [
+      progress.status,
+      progress.attemptsCount,
+      progress.hintsUsedCount,
+      progress.revealedSerbianTitle,
+      progress.revealedByGiveUp,
+    ].join('|');
+    
+    dialogsActions.setStartedProgressSignature(progressSignature);
   };
 
   const appName = import.meta.env.VITE_APP_NAME?.trim() || 'Balkanski kod';
@@ -192,6 +204,10 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
                     formatAudioTime={formatAudioTime}
                     onPlay={handlePlayGameTrack}
                   />
+
+                  {!gameUIState.isFinished && gameUIState.shouldShowStartCta ? (
+                    <StartGuessingCta onStart={handlePlayGameTrack} />
+                  ) : null}
 
                   {!gameUIState.isFinished && !gameUIState.shouldShowStartCta ? (
                     <GuessFormBlock

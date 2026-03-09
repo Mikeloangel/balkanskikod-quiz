@@ -151,6 +151,22 @@ export const radioTracks: RadioTrack[] = [
       added: '2026-02-03',
     },
   },
+
+  {
+    id: 'track-011',
+    links: {
+      local: '/tracks/track-011.mp3',
+      suno: 'https://suno.com/s/FsvRpnwAkqru1mdP',
+    },
+    names: {
+      serbian: 'Не растајте се с вољенима',
+      russian: 'С любимыми не расставайтесь',
+      original: 'С любимыми не расставайтесь',
+    },
+    dates: {
+      added: '2026-03-10',
+    },
+  },
 ];
 
 export const radioTracksSortedByAddedDate = [...radioTracks].sort(

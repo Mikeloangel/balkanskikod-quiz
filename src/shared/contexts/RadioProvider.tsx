@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useRef, useState, useCallback, type ReactNode } from 'react';
-import type { RadioTrack, RadioState } from '@/shared/radio';
+import { createContext, useContext, useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import { radioTracks } from '@/shared/config/radioTracks';
 import { getRadioStorage, setRadioStorage } from '@/shared/radio';
+import type { RadioTrack, RadioState } from '@/shared/radio';
+import { getGameAudioRef } from './AudioControlContext';
 
 interface RadioContextType {
   state: RadioState;
@@ -32,9 +33,10 @@ const initialState: RadioState = {
 
 export interface RadioProviderProps {
   children: ReactNode;
+  onPlay?: () => void; // callback для паузы игрового плеера
 }
 
-export const RadioProvider: React.FC<RadioProviderProps> = ({ children }) => {
+export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }) => {
   const [state, setState] = useState<RadioState>(initialState);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
@@ -127,6 +129,15 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children }) => {
           
           startProgressTracking();
           setupMaxPlayTimeout();
+          
+          // Ставим на паузу игровой плеер через глобальный ref
+          const gameAudio = getGameAudioRef();
+          if (gameAudio) {
+            gameAudio.pause();
+          }
+          
+          // Вызываем callback для паузы игрового плеера
+          onPlay?.();
         })
         .catch(() => {
           setState(prev => ({
@@ -135,7 +146,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children }) => {
           }));
         });
     }
-  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, state.totalPlayedTime]);
+  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, state.totalPlayedTime, onPlay]);
 
   const pause = useCallback(() => {
     if (!audioRef.current) return;
