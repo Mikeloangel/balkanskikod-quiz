@@ -167,6 +167,21 @@ export const radioTracks: RadioTrack[] = [
       added: '2026-03-10',
     },
   },
+  {
+    id: 'track-012',
+    links: {
+      local: '/tracks/track-012.mp3',
+      suno: 'https://suno.com/s/ECwmG7rvI2V4lU9h',
+    },
+    names: {
+      serbian: 'Воли ме, љуби – Отпети моштеници',
+      russian: 'Люби меня, люби - Отпетые Мошенники',
+      original: 'Люби меня, люби - Отпетые Мошенники',
+    },
+    dates: {
+      added: '2026-03-11',
+    },
+  },
 ];
 
 export const radioTracksSortedByAddedDate = [...radioTracks].sort(
