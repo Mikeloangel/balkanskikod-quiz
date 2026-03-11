@@ -191,7 +191,6 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
                     pageTitle={gameUIState.pageTitle}
                     showSolvedIcon={gameUIState.isSolved}
                     difficultyStars={gameUIState.difficultyStars}
-                    showNavigation={gameUIState.shouldShowTrackNavigation}
                     previousTrack={navigationState.previousTrack ? { id: navigationState.previousTrack.id } : null}
                     nextTrack={navigationState.nextTrack ? { id: navigationState.nextTrack.id } : null}
                     openedHints={gameUIState.openedHints}
@@ -200,7 +199,6 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
                   />
 
                   <AudioPlayerBlock
-                    isFinished={gameUIState.isFinished}
                     formatAudioTime={formatAudioTime}
                     onPlay={handlePlayGameTrack}
                   />

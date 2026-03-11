@@ -6,7 +6,6 @@ export interface TrackGameUIState {
   shouldShowStartCta: boolean;
   canUseHint: boolean;
   canShowHintButton: boolean;
-  shouldShowTrackNavigation: boolean;
   openedHints: string[];
   attemptsForView: string[];
   pageTitle: string;
@@ -71,7 +70,6 @@ export const TrackGameUIProvider: React.FC<TrackGameUIProviderProps> = ({
     const openedHints = track.hints.slice(0, progress.hintsUsedCount);
     const canUseHint = progress.hintsUsedCount < track.hints.length;
     const canShowHintButton = canUseHint || !progress.revealedSerbianTitle;
-    const shouldShowTrackNavigation = isTrackInProgress || isFinished;
     
     const pageTitle = isFinished ? track.names.serbian : track.names.safe;
     const attemptsForView = [...progress.attemptsHistory].reverse();
@@ -81,7 +79,6 @@ export const TrackGameUIProvider: React.FC<TrackGameUIProviderProps> = ({
       shouldShowStartCta,
       canUseHint,
       canShowHintButton,
-      shouldShowTrackNavigation,
       openedHints,
       attemptsForView,
       pageTitle,

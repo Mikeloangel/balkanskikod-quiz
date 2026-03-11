@@ -118,7 +118,6 @@ describe('TrackGameUIContext', () => {
     expect(result.current.state.isSolved).toBe(true);
     expect(result.current.state.isFinished).toBe(true);
     expect(result.current.state.pageTitle).toBe(mockTrack.names.serbian);
-    expect(result.current.state.shouldShowTrackNavigation).toBe(true);
   });
 
   it('should format attempts for view correctly', () => {

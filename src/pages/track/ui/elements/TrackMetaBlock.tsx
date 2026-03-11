@@ -2,7 +2,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { Box, Stack, Typography } from '@mui/material';
 
 type TrackNavTarget = {
   id: string;
@@ -12,7 +13,6 @@ type TrackMetaBlockProps = {
   pageTitle: string;
   showSolvedIcon: boolean;
   difficultyStars: string;
-  showNavigation: boolean;
   previousTrack: TrackNavTarget;
   nextTrack: TrackNavTarget;
   openedHints: string[];
@@ -24,7 +24,6 @@ export const TrackMetaBlock = ({
   pageTitle,
   showSolvedIcon,
   difficultyStars,
-  showNavigation,
   previousTrack,
   nextTrack,
   openedHints,
@@ -32,39 +31,37 @@ export const TrackMetaBlock = ({
   serbianTitle,
 }: TrackMetaBlockProps) => (
   <>
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Typography variant="h5">{pageTitle}</Typography>
-      {showSolvedIcon ? (
-        <CheckCircleRoundedIcon color="success" fontSize="small" />
-      ) : null}
-    </Stack>
-
-    <Typography color="text.secondary">Сложность: {difficultyStars}</Typography>
-
-    {showNavigation ? (
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-        <Button
+    <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography variant="h5">{pageTitle}</Typography>
+        {showSolvedIcon ? (
+          <CheckCircleRoundedIcon color="success" fontSize="small" />
+        ) : null}
+      </Stack>
+      
+      <Stack direction="row" spacing={1}>
+        <IconButton
           component={RouterLink}
           to={previousTrack ? `/track/${previousTrack.id}` : '#'}
           disabled={!previousTrack}
-          variant="outlined"
           color="inherit"
-          startIcon={<NavigateBeforeRoundedIcon />}
+          size="small"
         >
-          Предыдущий трек
-        </Button>
-        <Button
+          <NavigateBeforeRoundedIcon />
+        </IconButton>
+        <IconButton
           component={RouterLink}
           to={nextTrack ? `/track/${nextTrack.id}` : '#'}
           disabled={!nextTrack}
-          variant="outlined"
           color="inherit"
-          endIcon={<NavigateNextRoundedIcon />}
+          size="small"
         >
-          Следующий трек
-        </Button>
+          <NavigateNextRoundedIcon />
+        </IconButton>
       </Stack>
-    ) : null}
+    </Stack>
+
+    <Typography color="text.secondary">Сложность: {difficultyStars}</Typography>
 
     {openedHints.length > 0 ? (
       <Box>

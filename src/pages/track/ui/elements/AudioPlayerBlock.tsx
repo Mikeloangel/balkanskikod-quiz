@@ -11,13 +11,11 @@ import {
 import { useAudioState } from '@/shared/contexts';
 
 type AudioPlayerBlockProps = {
-  isFinished: boolean;
   formatAudioTime: (value: number) => string;
   onPlay?: () => void;
 };
 
 export const AudioPlayerBlock = ({
-  isFinished,
   formatAudioTime,
   onPlay,
 }: AudioPlayerBlockProps) => {
@@ -57,27 +55,25 @@ export const AudioPlayerBlock = ({
             </Button>
           </ButtonGroup>
 
-          {isFinished ? (
-            <Box>
-              <Slider
-                size="small"
-                min={0}
-                max={state.duration || 1}
-                step={0.1}
-                value={Math.min(state.currentTime, state.duration || 1)}
-                onChange={handleSeek}
-                disabled={state.duration <= 0}
-              />
-              <Stack direction="row" justifyContent="space-between">
-                <Typography variant="caption" color="text.secondary">
-                  {formatAudioTime(state.currentTime)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {formatAudioTime(state.duration)}
-                </Typography>
-              </Stack>
-            </Box>
-          ) : null}
+          <Box>
+            <Slider
+              size="small"
+              min={0}
+              max={state.duration || 1}
+              step={0.1}
+              value={Math.min(state.currentTime, state.duration || 1)}
+              onChange={handleSeek}
+              disabled={state.duration <= 0}
+            />
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="caption" color="text.secondary">
+                {formatAudioTime(state.currentTime)}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {formatAudioTime(state.duration)}
+              </Typography>
+            </Stack>
+          </Box>
         </Stack>
       </Paper>
     </>
