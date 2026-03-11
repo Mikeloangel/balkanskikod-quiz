@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import { tracks } from '@/shared/config';
+import { tracksSortedByAddedDate } from '@/shared/config';
 import type { Track } from '@/shared/models';
 
 export interface TrackNavigationState {
@@ -42,10 +42,10 @@ export const TrackNavigationProvider: React.FC<TrackNavigationProviderProps> = (
   currentTrack 
 }) => {
   const navigationState = useMemo(() => {
-    const currentTrackIndex = tracks.findIndex((item) => item.id === currentTrack.id);
-    const previousTrack = currentTrackIndex > 0 ? tracks[currentTrackIndex - 1] : null;
-    const nextTrack = currentTrackIndex >= 0 && currentTrackIndex < tracks.length - 1
-      ? tracks[currentTrackIndex + 1]
+    const currentTrackIndex = tracksSortedByAddedDate.findIndex((item) => item.id === currentTrack.id);
+    const previousTrack = currentTrackIndex > 0 ? tracksSortedByAddedDate[currentTrackIndex - 1] : null;
+    const nextTrack = currentTrackIndex >= 0 && currentTrackIndex < tracksSortedByAddedDate.length - 1
+      ? tracksSortedByAddedDate[currentTrackIndex + 1]
       : null;
 
     return {

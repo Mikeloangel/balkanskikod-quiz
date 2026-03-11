@@ -1,4 +1,4 @@
-import { Stack, Typography, Button, Box } from '@mui/material';
+import { Stack, IconButton, Box, Typography } from '@mui/material';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 
 type HeaderBlockProps = {
@@ -23,21 +23,23 @@ export const HeaderBlock = ({ title, onShareClick }: HeaderBlockProps) => {
         </Typography>
       </Box>
 
-      <Stack direction="row" spacing={1}>
-        <Button
-          startIcon={<ShareRoundedIcon />}
-          size="large"
+      <Box>
+        <IconButton
           onClick={onShareClick}
           sx={{
-            fontWeight: 700,
+            borderRadius: 1,
             background:
               'linear-gradient(90deg, rgba(110,155,255,1) 0%, rgba(255,124,200,1) 100%)',
             color: '#0f1115',
+            '&:hover': {
+              background:
+                'linear-gradient(90deg, rgba(110,155,255,0.8) 0%, rgba(255,124,200,0.8) 100%)',
+            },
           }}
         >
-          Поделиться
-        </Button>
-      </Stack>
+          <ShareRoundedIcon />
+        </IconButton>
+      </Box>
     </Stack>
   );
 };

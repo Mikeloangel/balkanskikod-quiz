@@ -1,8 +1,14 @@
 import { getTrackProgressSafe, isTrackNew } from '@/entities/progress';
 import type { StorageSchema, TrackProgressStatus } from '@/entities/progress';
 import type { Track } from '@/shared/models';
-import { Paper, Typography, Stack, Box, Button, Chip } from '@mui/material';
+import { Paper, Typography, Stack, Box, Chip, IconButton, Tooltip } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import PendingRoundedIcon from '@mui/icons-material/PendingRounded';
+import NotStartedRoundedIcon from '@mui/icons-material/NotStartedRounded';
 
 
 const statusLabelMap = {
@@ -56,37 +62,69 @@ export const TracksListBlock = ({ tracks, storage }: TracksListBlockProps) => {
                     useFlexGap
                     flexWrap="wrap"
                   >
-                    <Typography variant="h6">{track.names.safe}</Typography>
                     {showNew ? (
-                      <Chip size="small" color="primary" label="Новое" />
+                      <Tooltip title="Новое">
+                        <Chip size="small" color="primary" icon={<NewReleasesRoundedIcon sx={{ fontSize: 16 }} />} />
+                      </Tooltip>
                     ) : null}
                     {hasUserProgress ? (
-                      <Chip
-                        size="small"
-                        label={statusLabelMap[status]}
-                        color={
-                          status === 'solved'
-                            ? 'success'
-                            : status === 'revealed'
-                              ? 'warning'
-                              : status === 'in_progress'
-                                ? 'info'
-                                : 'default'
-                        }
-                      />
+                      <Tooltip title={statusLabelMap[status]}>
+                        <Chip
+                          size="small"
+                          icon={
+                            status === 'solved'
+                              ? <CheckCircleRoundedIcon sx={{ fontSize: 16 }} />
+                              : status === 'revealed'
+                                ? <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
+                                : status === 'in_progress'
+                                  ? <PendingRoundedIcon sx={{ fontSize: 16 }} />
+                                  : <NotStartedRoundedIcon sx={{ fontSize: 16 }} />
+                          }
+                          color={
+                            status === 'solved'
+                              ? 'success'
+                              : status === 'revealed'
+                                ? 'warning'
+                                : status === 'in_progress'
+                                  ? 'info'
+                                  : 'default'
+                          }
+                        />
+                      </Tooltip>
                     ) : null}
+                    <Typography
+                      variant="h6"
+                      component={RouterLink}
+                      to={`/track/${track.id}`}
+                      sx={{
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                          color: 'primary.main'
+                        }
+                      }}
+                    >
+                      {status === 'solved' || status === 'revealed' ? (
+                        <>
+                          {track.names.original} <span style={{ fontSize: '12px', fontWeight: 300 }}>{track.names.serbian}</span>
+                        </>
+                      ) : (
+                        track.names.safe
+                      )}
+                    </Typography>
                   </Stack>
                   <Typography color="text.secondary">
                     {!hasUserProgress ? `Статус: ${statusLabelMap[status]} | ` : ''}
                     Сложность:{' '}
-                    {getDifficultyStars(track.difficulty)} | Попыток:{' '}
-                    {attempts}
+                    {getDifficultyStars(track.difficulty)}
+                    {attempts > 0 ? ` | Попыток: ${attempts}` : ''}
                   </Typography>
                 </Box>
 
-                <Button component={RouterLink} to={`/track/${track.id}`}>
-                  Открыть
-                </Button>
+                <IconButton component={RouterLink} to={`/track/${track.id}`}>
+                  <ArrowForwardRoundedIcon />
+                </IconButton>
               </Stack>
             </Paper>
           );
