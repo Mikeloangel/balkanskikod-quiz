@@ -275,6 +275,14 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
     audioRef.current = audio;
 
     const handleEnded = () => {
+      // Проверяем лимит времени перед запуском следующего трека
+      if (state.totalPlayedTime >= MAX_PLAY_TIME_MS) {
+        setState(prev => ({
+          ...prev,
+          isPlaying: false,
+        }));
+        return;
+      }
       nextTrackAndPlay();
     };
 
@@ -283,6 +291,10 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         ...prev,
         error: 'Ошибка загрузки трека',
       }));
+      // Проверяем лимит времени перед запуском следующего трека
+      if (state.totalPlayedTime >= MAX_PLAY_TIME_MS) {
+        return;
+      }
       setTimeout(nextTrack, 2000);
     };
 

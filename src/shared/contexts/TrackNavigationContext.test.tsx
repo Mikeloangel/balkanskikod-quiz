@@ -2,10 +2,10 @@ import React from 'react';
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { TrackNavigationProvider, useTrackNavigation } from './TrackNavigationContext';
-import { tracks } from '../config';
+import { tracksSortedByAddedDate } from '../config';
 
 describe('TrackNavigationContext', () => {
-  const mockTrack = tracks[0];
+  const mockTrack = tracksSortedByAddedDate[0];
 
   it('should provide current track navigation state', () => {
     const { result } = renderHook(() => useTrackNavigation(), {
@@ -23,38 +23,38 @@ describe('TrackNavigationContext', () => {
   it('should calculate previous and next tracks correctly', () => {
     const { result } = renderHook(() => useTrackNavigation(), {
       wrapper: ({ children }) => (
-        <TrackNavigationProvider currentTrack={tracks[1]}>
+        <TrackNavigationProvider currentTrack={tracksSortedByAddedDate[1]}>
           {children}
         </TrackNavigationProvider>
       ),
     });
 
-    expect(result.current.state.previousTrack?.id).toBe(tracks[0].id);
-    expect(result.current.state.nextTrack?.id).toBe(tracks[2].id);
+    expect(result.current.state.previousTrack?.id).toBe(tracksSortedByAddedDate[0].id);
+    expect(result.current.state.nextTrack?.id).toBe(tracksSortedByAddedDate[2].id);
   });
 
   it('should handle first and last track boundaries', () => {
     const { result: firstResult } = renderHook(() => useTrackNavigation(), {
       wrapper: ({ children }) => (
-        <TrackNavigationProvider currentTrack={tracks[0]}>
+        <TrackNavigationProvider currentTrack={tracksSortedByAddedDate[0]}>
           {children}
         </TrackNavigationProvider>
       ),
     });
 
     expect(firstResult.current.state.previousTrack).toBeNull();
-    expect(firstResult.current.state.nextTrack?.id).toBe(tracks[1].id);
+    expect(firstResult.current.state.nextTrack?.id).toBe(tracksSortedByAddedDate[1].id);
 
     const { result: lastResult } = renderHook(() => useTrackNavigation(), {
       wrapper: ({ children }) => (
-        <TrackNavigationProvider currentTrack={tracks[tracks.length - 1]}>
+        <TrackNavigationProvider currentTrack={tracksSortedByAddedDate[tracksSortedByAddedDate.length - 1]}>
           {children}
         </TrackNavigationProvider>
       ),
     });
 
     expect(lastResult.current.state.nextTrack).toBeNull();
-    expect(lastResult.current.state.previousTrack?.id).toBe(tracks[tracks.length - 2].id);
+    expect(lastResult.current.state.previousTrack?.id).toBe(tracksSortedByAddedDate[tracksSortedByAddedDate.length - 2].id);
   });
 
   it('should provide navigation actions', () => {
@@ -75,7 +75,7 @@ describe('TrackNavigationContext', () => {
   it('should calculate canGoToPrevious and canGoToNext correctly', () => {
     const { result: firstResult } = renderHook(() => useTrackNavigation(), {
       wrapper: ({ children }) => (
-        <TrackNavigationProvider currentTrack={tracks[0]}>
+        <TrackNavigationProvider currentTrack={tracksSortedByAddedDate[0]}>
           {children}
         </TrackNavigationProvider>
       ),
@@ -86,7 +86,7 @@ describe('TrackNavigationContext', () => {
 
     const { result: lastResult } = renderHook(() => useTrackNavigation(), {
       wrapper: ({ children }) => (
-        <TrackNavigationProvider currentTrack={tracks[tracks.length - 1]}>
+        <TrackNavigationProvider currentTrack={tracksSortedByAddedDate[tracksSortedByAddedDate.length - 1]}>
           {children}
         </TrackNavigationProvider>
       ),

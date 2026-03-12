@@ -1,9 +1,14 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { Container, Link, Paper, Stack, Typography } from '@mui/material';
+import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
 
 export const AboutPage = () => (
   <>
+    <MetaTags 
+      title="О проекте"
+      description="Balkanski kod — это музыкальная игра, где нужно слушать трек и угадывать название на русском или на языке оригинала."
+    />
     <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
       <Paper sx={{ p: 3 }}>
         <Stack spacing={1.5}>

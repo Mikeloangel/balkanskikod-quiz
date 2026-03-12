@@ -5,6 +5,7 @@ import type { Track } from '@/shared/models';
 import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
 import { useProgressStore, selectTrackProgress } from '@/entities/progress';
 import { useAudioState, useAudioActions, useUIDialogs, useTrackNavigation, useTrackGameUI, TrackNavigationProvider, TrackGameUIProvider, AudioProvider, useRadio } from '@/shared/contexts';
+import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
 import { AttemptsHistoryBlock } from './elements/AttemptsHistoryBlock';
 import { AudioPlayerBlock } from './elements/AudioPlayerBlock';
@@ -181,6 +182,11 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
 
   return (
     <>
+      <MetaTags 
+        title={gameUIState.isSolved || gameUIState.isRevealed ? track.names.original : track.names.safe}
+        description={`Угадай мелодию: ${track.names.safe}. Сложность: ${'★'.repeat(track.difficulty).padEnd(5, '☆')}`}
+        type="music.song"
+      />
       <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
             <Stack spacing={2.5}>
               <TrackPageHeader pageTitle={gameUIState.pageTitle} />

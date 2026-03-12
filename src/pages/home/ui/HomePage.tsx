@@ -4,6 +4,7 @@ import { tracksSortedByAddedDate } from '@/shared/config';
 import { useProgressStore, selectGlobalStats, selectLastSolved } from '@/entities/progress';
 import type { StorageSchema } from '@/entities/progress';
 import { shareLink } from '@/shared/lib/share';
+import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
 import { HeaderBlock } from './elements/HeaderBlock';
 import { StatsBlock } from './elements/StatsBlock';
@@ -77,6 +78,10 @@ export const HomePage = () => {
 
   return (
     <>
+      <MetaTags 
+        title="Balkanski kod"
+        description="Угадай мелодию по фрагменту и проверь, насколько ты в теме. Балканские хиты в новой форме."
+      />
       <Container maxWidth="lg" sx={{ py: 4, pb: 18 }}>
         <Stack spacing={3}>
           <HeaderBlock
