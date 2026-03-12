@@ -9,7 +9,8 @@ type HeaderBlockProps = {
 export const HeaderBlock = ({ title, onShareClick }: HeaderBlockProps) => {
   return (
     <Stack
-      direction={{ xs: 'column', md: 'row' }}
+      // direction={{ xs: 'column', md: 'row' }}
+      direction="row"
       justifyContent="space-between"
       alignItems={{ xs: 'flex-start', md: 'center' }}
       spacing={2}

@@ -67,6 +67,7 @@ export const RadioWidget: React.FC = () => {
           <Box sx={{ 
             display: 'flex', 
             alignItems: 'center', 
+            justifyContent: 'space-between',
             gap: 2,
             width: '100%',
           }}>
