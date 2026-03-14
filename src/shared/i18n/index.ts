@@ -81,7 +81,7 @@ i18n
     },
     
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage'],
       caches: ['localStorage'],
       lookupLocalStorage: 'balkanski-kod-language',
     },
