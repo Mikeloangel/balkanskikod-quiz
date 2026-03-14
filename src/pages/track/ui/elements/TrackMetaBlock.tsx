@@ -4,6 +4,7 @@ import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import IconButton from '@mui/material/IconButton';
 import { Box, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type TrackNavTarget = {
   id: string;
@@ -29,7 +30,10 @@ export const TrackMetaBlock = ({
   openedHints,
   revealedSerbianTitle,
   serbianTitle,
-}: TrackMetaBlockProps) => (
+}: TrackMetaBlockProps) => {
+  const { t } = useTranslation('tracks');
+  
+  return (
   <>
     <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
       <Stack direction="row" spacing={1} alignItems="center">
@@ -61,12 +65,12 @@ export const TrackMetaBlock = ({
       </Stack>
     </Stack>
 
-    <Typography color="text.secondary">Сложность: {difficultyStars}</Typography>
+    <Typography color="text.secondary">{t('difficulty')}: {difficultyStars}</Typography>
 
     {openedHints.length > 0 ? (
       <Box>
         <Typography color="text.secondary" mb={0.5}>
-          Открытые подсказки:
+          {t('openedHints')}
         </Typography>
         <Stack spacing={0.5}>
           {openedHints.map((hint) => (
@@ -77,8 +81,9 @@ export const TrackMetaBlock = ({
     ) : null}
 
     {revealedSerbianTitle ? (
-      <Typography color="text.secondary">Явная подсказка: {serbianTitle}</Typography>
+      <Typography color="text.secondary">{t('explicitHintRevealed')} {serbianTitle}</Typography>
     ) : null}
   </>
 );
+};
 

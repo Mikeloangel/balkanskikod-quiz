@@ -1,4 +1,5 @@
 import { Chip, Paper, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { Track } from '@/shared/models';
 import { checkAnswer, getPartialMatches } from '@/shared/lib/text';
 
@@ -13,6 +14,8 @@ export const AttemptsHistoryBlock = ({
   attemptsCount,
   track,
 }: AttemptsHistoryBlockProps) => {
+  const { t } = useTranslation('tracks');
+  
   if (attemptsForView.length === 0) {
     return null;
   }
@@ -38,23 +41,23 @@ export const AttemptsHistoryBlock = ({
             >
               <Stack spacing={0.5}>
                 <Typography variant="caption" color="text.secondary">
-                  Попытка #{attemptNumber}
+                  {t('attempt')} #{attemptNumber}
                 </Typography>
                 <Typography fontWeight={600}>{attempt}</Typography>
               </Stack>
 
               {attemptResult.isCorrect ? (
-                <Chip color="success" label="Угадано" size="small" />
+                <Chip color="success" label={t('guessed')} size="small" />
               ) : partial.hasPartialMatch ? (
                 <Chip
                   color="info"
-                  label={`Частично: ${Math.round(partial.ratio * 100)}%`}
+                  label={`${t('partially')}: ${Math.round(partial.ratio * 100)}%`}
                   size="small"
                 />
               ) : (
                 <Chip
                   color="default"
-                  label={`Мимо: ${Math.round(attemptResult.similarity * 100)}%`}
+                  label={`${t('missed')}: ${Math.round(attemptResult.similarity * 100)}%`}
                   size="small"
                 />
               )}
@@ -62,7 +65,7 @@ export const AttemptsHistoryBlock = ({
 
             {!attemptResult.isCorrect && partial.hasPartialMatch ? (
               <Typography mt={1} variant="body2" color="text.secondary">
-                Совпавшие слова: {partial.matchedWords.join(', ')}
+                {t('matchedWords')} {partial.matchedWords.join(', ')}
               </Typography>
             ) : null}
           </Paper>

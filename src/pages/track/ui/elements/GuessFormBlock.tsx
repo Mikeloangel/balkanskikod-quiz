@@ -1,4 +1,5 @@
 import { Button, Stack, TextField } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type GuessFormBlockProps = {
   attemptNumber: number;
@@ -20,11 +21,14 @@ export const GuessFormBlock = ({
   hintButtonLabel,
   onHint,
   onGiveUp,
-}: GuessFormBlockProps) => (
+}: GuessFormBlockProps) => {
+  const { t } = useTranslation('tracks');
+  
+  return (
   <Stack spacing={1.5}>
     <TextField
       fullWidth
-      label={`Попытка #${attemptNumber}`}
+      label={`${t('attempt')} #${attemptNumber}`}
       value={value}
       onChange={(event) => onChange(event.target.value)}
       onKeyDown={(event) => {
@@ -35,16 +39,17 @@ export const GuessFormBlock = ({
     />
 
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-      <Button onClick={onSubmit}>Отправить</Button>
+      <Button onClick={onSubmit}>{t('submit')}</Button>
       {showHintButton ? (
         <Button color="secondary" onClick={onHint}>
           {hintButtonLabel}
         </Button>
       ) : null}
       <Button color="error" onClick={onGiveUp}>
-        Сдаться
+        {t('giveUp')}
       </Button>
     </Stack>
   </Stack>
 );
+};
 

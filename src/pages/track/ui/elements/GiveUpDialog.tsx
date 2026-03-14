@@ -1,4 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type GiveUpDialogProps = {
   open: boolean;
@@ -6,20 +7,24 @@ type GiveUpDialogProps = {
   onConfirm: () => void;
 };
 
-export const GiveUpDialog = ({ open, onClose, onConfirm }: GiveUpDialogProps) => (
+export const GiveUpDialog = ({ open, onClose, onConfirm }: GiveUpDialogProps) => {
+  const { t } = useTranslation('tracks');
+  
+  return (
   <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-    <DialogTitle>Сдаться и показать ответ?</DialogTitle>
+    <DialogTitle>{t('giveUpTitle')}</DialogTitle>
     <DialogContent>
       <Typography color="text.secondary" sx={{ pt: 1 }}>
-        Можно продолжать попытки, а можно открыть ответ прямо сейчас.
+        {t('giveUpDescription')}
       </Typography>
     </DialogContent>
     <DialogActions>
       <Button onClick={onClose} color="inherit">
-        Не сейчас
+        {t('notNow')}
       </Button>
-      <Button onClick={onConfirm}>Ок, показать ответ</Button>
+      <Button onClick={onConfirm}>{t('showAnswer')}</Button>
     </DialogActions>
   </Dialog>
 );
+};
 

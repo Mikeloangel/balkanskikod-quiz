@@ -8,21 +8,25 @@ import ruCommon from './locales/ru/common';
 import ruPages from './locales/ru/pages';
 import ruTracks from './locales/ru/tracks';
 import ruMeta from './locales/ru/meta';
+import ruRadio from './locales/ru/radio';
 
 import enCommon from './locales/en/common';
 import enPages from './locales/en/pages';
 import enTracks from './locales/en/tracks';
 import enMeta from './locales/en/meta';
+import enRadio from './locales/en/radio';
 
 import srCommon from './locales/sr/common';
 import srPages from './locales/sr/pages';
 import srTracks from './locales/sr/tracks';
 import srMeta from './locales/sr/meta';
+import srRadio from './locales/sr/radio';
 
 import srCyrlCommon from './locales/sr_cyrl/common';
 import srCyrlPages from './locales/sr_cyrl/pages';
 import srCyrlTracks from './locales/sr_cyrl/tracks';
 import srCyrlMeta from './locales/sr_cyrl/meta';
+import srCyrlRadio from './locales/sr_cyrl/radio';
 
 export const resources = {
   ru: {
@@ -30,24 +34,28 @@ export const resources = {
     pages: ruPages,
     tracks: ruTracks,
     meta: ruMeta,
+    radio: ruRadio,
   },
   en: {
     common: enCommon,
     pages: enPages,
     tracks: enTracks,
     meta: enMeta,
+    radio: enRadio,
   },
   sr: {
     common: srCommon,
     pages: srPages,
     tracks: srTracks,
     meta: srMeta,
+    radio: srRadio,
   },
   'sr_cyrl': {
     common: srCyrlCommon,
     pages: srCyrlPages,
     tracks: srCyrlTracks,
     meta: srCyrlMeta,
+    radio: srCyrlRadio,
   },
 } as const;
 
@@ -91,7 +99,7 @@ i18n
     },
     
     // Ensure fallback language works correctly
-    fallbackNS: ['common', 'pages', 'tracks', 'meta'],
+    fallbackNS: ['common', 'pages', 'tracks', 'meta', 'radio'],
   });
 
 export default i18n;

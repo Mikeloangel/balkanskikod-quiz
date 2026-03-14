@@ -8,6 +8,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useAudioState } from '@/shared/contexts';
 
 type AudioPlayerBlockProps = {
@@ -19,6 +20,7 @@ export const AudioPlayerBlock = ({
   formatAudioTime,
   onPlay,
 }: AudioPlayerBlockProps) => {
+  const { t } = useTranslation('tracks');
   const { state, actions } = useAudioState();
 
   const handleTogglePlayback = () => {
@@ -46,12 +48,12 @@ export const AudioPlayerBlock = ({
       {state.error ? <Alert severity="error">{state.error}</Alert> : null}
       <Paper variant="outlined" sx={{ p: 1 }}>
         <Stack spacing={1}>
-          <ButtonGroup fullWidth variant="contained" aria-label="Управление плеером">
+          <ButtonGroup fullWidth variant="contained" aria-label={t('playerControls')}>
             <Button onClick={handleTogglePlayback}>
-              {state.isPlaying ? 'Пауза' : 'Старт'}
+              {state.isPlaying ? t('pause') : t('start')}
             </Button>
             <Button color="secondary" onClick={handleRestart}>
-              С начала
+              {t('fromBeginning')}
             </Button>
           </ButtonGroup>
 
