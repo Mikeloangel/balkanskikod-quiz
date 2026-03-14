@@ -7,3 +7,4 @@ export { TrackNavigationProvider, useTrackNavigation } from './TrackNavigationCo
 export { TrackGameUIProvider, useTrackGameUI } from './TrackGameUIContext';
 export { RadioProvider, useRadio } from './RadioProvider';
 export { AudioControlProvider, useAudioControl } from './AudioControlContext';
+export { LanguageProvider, useLanguage } from './LanguageContext';

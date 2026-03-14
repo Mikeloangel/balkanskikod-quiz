@@ -2,85 +2,74 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Container, Link, Paper, Stack, Typography } from '@mui/material';
 import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
+import { LanguageSelector } from '@/shared/i18n';
+import { useAboutContent } from '@/hooks/useAboutContent';
 
-export const AboutPage = () => (
-  <>
-    <MetaTags 
-      title="О проекте"
-      description="Balkanski kod — это музыкальная игра, где нужно слушать трек и угадывать название на русском или на языке оригинала."
-    />
-    <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
-      <Paper sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="h4" fontWeight={700}>
-            О проекте
-          </Typography>
-          <Typography>
-            Balkanski kod — это музыкальная игра, где нужно слушать трек и угадывать
-            название на русском или на языке оригинала.
-          </Typography>
-          <Typography>
-            Идея проекта выросла из моего личного процесса изучения сербского языка через
-            музыку. Я беру знакомые песни, адаптирую или перевожу их на сербский,
-            экспериментирую со стилями и звучанием, а потом превращаю результат в небольшую
-            игру на угадывание. Для меня это одновременно способ учить язык, развлекаться и
-            делиться этим процессом с друзьями.
-          </Typography>
-          <Typography>
-            Треки в проекте — это в основном кавер-версии и музыкальные эксперименты,
-            созданные с помощью AI-инструментов и собранные в формат мини-викторины. Здесь
-            можно слушать треки, угадывать названия, использовать подсказки, следить за
-            прогрессом и делиться ссылками на игру или конкретные карточки.
-          </Typography>
-          <Typography>
-            Важно: проект экспериментальный и создается как pet project в формате MVP. В
-            сербских названиях, формулировках или текстах подсказок местами могут
-            встречаться неточности, спорные адаптации или неидеальные грамматические
-            решения. Это часть живого творческого и учебного процесса, а не академически
-            выверенная языковая база.
-          </Typography>
-          <Typography color="text.secondary">
-            Если тебе близка музыка, языки и такие странные, теплые, немного балканские
-            эксперименты — добро пожаловать.
-          </Typography>
+export const AboutPage = () => {
+  const content = useAboutContent();
 
-          <Stack spacing={0.5}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Контакты
-            </Typography>
+  return (
+    <>
+      <MetaTags
+        title={content?.title || "О проекте"}
+      />
+      <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
+        <Paper sx={{ p: 3 }}>
+          <Stack spacing={1.5}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center">
+              <Typography variant="h4" fontWeight={700}>
+                {content?.title || "О проекте"}
+              </Typography>
+              <LanguageSelector />
+            </Stack>
+            {content?.story?.map((paragraph, index) => (
+              <Typography key={index}>
+                {paragraph}
+              </Typography>
+            ))}
+
             <Typography>
-              GitHub:{' '}
-              <Link
-                href="https://github.com/mikeloangel"
-                target="_blank"
-                rel="noreferrer"
-                underline="hover"
-              >
-                github.com/mikeloangel
-              </Link>
+              <strong>{content?.technologies || "Технологии"}:</strong> React, TypeScript, MUI, Vite, i18next
             </Typography>
+
+            <Stack spacing={0.5}>
+              <Typography variant="subtitle2" color="text.secondary">
+                {content?.contacts.title || "Контакты"}
+              </Typography>
+              <Typography>
+                GitHub:{' '}
+                <Link
+                  href={`https://${content?.contacts.github || "github.com/mikeloangel"}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  underline="hover"
+                >
+                  {content?.contacts.github || "github.com/mikeloangel"}
+                </Link>
+              </Typography>
+              <Typography>
+                Telegram:{' '}
+                <Link
+                  href={`https://t.me/${content?.contacts.telegram || "mikeloangel"}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  underline="hover"
+                >
+                  {content?.contacts.telegram || "@mikeloangel"}
+                </Link>
+              </Typography>
+            </Stack>
+
             <Typography>
-              Telegram:{' '}
-              <Link
-                href="https://t.me/mikeloangel"
-                target="_blank"
-                rel="noreferrer"
-                underline="hover"
-              >
-                @mikeloangel
+              <Link component={RouterLink} to="/" underline="hover">
+                {content?.backToHome || "На главную"}
               </Link>
             </Typography>
           </Stack>
+        </Paper>
+      </Container>
 
-          <Typography>
-            <Link component={RouterLink} to="/" underline="hover">
-              На главную
-            </Link>
-          </Typography>
-        </Stack>
-      </Paper>
-    </Container>
-    
-    <RadioWidget />
-  </>
-);
+      <RadioWidget />
+    </>
+  );
+};

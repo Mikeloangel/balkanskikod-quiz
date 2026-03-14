@@ -6,6 +6,7 @@ import type { StorageSchema } from '@/entities/progress';
 import { shareLink } from '@/shared/lib/share';
 import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
+import { useTranslation } from 'react-i18next';
 import { HeaderBlock } from './elements/HeaderBlock';
 import { StatsBlock } from './elements/StatsBlock';
 import { LastSolvedBlock } from './elements/LastSolvedBlock';
@@ -15,6 +16,7 @@ import { ShareDialog } from './elements/ShareDialog';
 import { ResetDialog } from './elements/ResetDialog';
 
 export const HomePage = () => {
+  const { t } = useTranslation(['pages', 'meta']);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export const HomePage = () => {
       return {
         url: `${appBaseUrl}/#/`,
         title: appName,
-        text: `Попробуй угадать треки в ${appName}`,
+        text: t('pages.home.shareText', { appName }),
       };
     },
     [appName],
@@ -56,18 +58,18 @@ export const HomePage = () => {
       sharePayload.text,
     );
     if (success) {
-      setShareFeedback('Ссылка отправлена или скопирована в буфер.');
+      setShareFeedback(t('pages.home.shareSuccess'));
     } else {
-      setShareFeedback('Не удалось поделиться ссылкой.');
+      setShareFeedback(t('pages.home.shareError'));
     }
   };
 
   const handleManualCopy = async () => {
     try {
       await navigator.clipboard.writeText(sharePayload.url);
-      setShareFeedback('Ссылка скопирована в буфер.');
+      setShareFeedback(t('pages.home.copySuccess'));
     } catch {
-      setShareFeedback('Не удалось скопировать ссылку.');
+      setShareFeedback(t('pages.home.copyError'));
     }
   };
 
@@ -79,13 +81,13 @@ export const HomePage = () => {
   return (
     <>
       <MetaTags 
-        title="Balkanski kod"
-        description="Угадай мелодию по фрагменту и проверь, насколько ты в теме. Балканские хиты в новой форме."
+        title={t('meta.title')}
+        description={t('meta.description')}
       />
       <Container maxWidth="lg" sx={{ py: 4, pb: 18 }}>
         <Stack spacing={3}>
           <HeaderBlock
-            title="Balkanski kod"
+            title={appName}
             onShareClick={() => {
               setShareFeedback(null);
               setIsShareOpen(true);
