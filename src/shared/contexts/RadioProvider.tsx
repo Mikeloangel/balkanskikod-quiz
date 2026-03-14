@@ -273,7 +273,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
 
     const audio = new Audio();
     audio.src = resolveLocalTrackUrl(currentTrack.links.local);
-    audio.volume = state.volume;
+    // Громкость установится в отдельном useEffect
     audioRef.current = audio;
 
     const handleEnded = () => {
@@ -333,7 +333,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       audio.pause();
       audio.src = '';
     };
-  }, [currentTrack, nextTrack, nextTrackAndPlay, state.totalPlayedTime, state.volume]);
+  }, [currentTrack, nextTrack, nextTrackAndPlay, state.totalPlayedTime]);
 
   useEffect(() => {
     if (audioRef.current) {
