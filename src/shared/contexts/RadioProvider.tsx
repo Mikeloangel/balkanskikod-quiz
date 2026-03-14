@@ -69,6 +69,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         ...prev,
         currentTime,
         duration,
+        totalPlayedTime: prev.totalPlayedTime + 1, // Увеличиваем на 1 секунду, т.к. updateProgress вызывается каждую секунду
       }));
 
       setState(prev => {
@@ -108,6 +109,9 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
   const play = useCallback(() => {
     if (!audioRef.current || !currentTrack) return;
 
+    // Восстанавливаем позицию воспроизведения
+    audioRef.current.currentTime = state.currentTime;
+
     const playPromise = audioRef.current.play();
     
     if (playPromise !== undefined) {
@@ -117,13 +121,15 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
           setState(prev => ({
             ...prev,
             isPlaying: true,
-            playbackStartTime: now,
+            // Устанавливаем playbackStartTime только если не было паузы (т.е. трек начинается сначала)
+            playbackStartTime: prev.playbackStartTime === null ? now : prev.playbackStartTime,
             error: null,
           }));
           
           setRadioStorage({
       currentTrackId: currentTrack.id,
-      playbackStartTime: now,
+      // Сохраняем текущий playbackStartTime
+      playbackStartTime: state.playbackStartTime === null ? now : state.playbackStartTime,
       totalPlayedTime: state.totalPlayedTime,
     });
           
@@ -146,7 +152,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
           }));
         });
     }
-  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, state.totalPlayedTime, onPlay]);
+  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, state.totalPlayedTime, state.playbackStartTime, state.currentTime, onPlay]);
 
   const pause = useCallback(() => {
     if (!audioRef.current) return;
@@ -265,6 +271,11 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
 
   useEffect(() => {
     if (!currentTrack) return;
+
+    // Если трек тот же самый, не пересоздаем audio
+    if (audioRef.current && audioRef.current.src === resolveLocalTrackUrl(currentTrack.links.local)) {
+      return;
+    }
 
     if (audioRef.current) {
       audioRef.current.pause();
