@@ -16,6 +16,7 @@
 - Любые изменения localStorage-структуры проводить аккуратно и обратно-совместимо.
 - UI должен оставаться в dark mode.
 - Все тексты интерфейса — на русском.
+- **Интернационализация реализована** — поддержка 4 языков (ru, en, sr, sr-cyrl) с динамической загрузкой контента.
 
 ## 3. Архитектура проекта
 
@@ -32,6 +33,7 @@
   - `UIDialogsContext.tsx` — управление диалогами (share, give up)
   - `TrackNavigationContext.tsx` — навигация между треками
   - `TrackGameUIContext.tsx` — сложная UI логика игры
+- `src/shared/i18n/` — интернационализация (4 языка + динамическая загрузка контента)
 - `src/shared/radio/` — shared типы и storage для радио:
   - `types/radioTrack.ts` — RadioTrack, RadioState, RadioStorage типы
   - `types/storage.ts` — localStorage функции для радио
@@ -48,6 +50,10 @@
   - `ui/PlayControls.tsx` — кнопка Play/Pause
   - `ui/VolumeControl.tsx` — регулятор громкости с умными кнопками
   - `ui/ProgressBar.tsx` — визуальный прогресс-бар без перемотки
+- `src/content/about/` — контент страниц с динамической загрузкой:
+  - `types.ts` — TypeScript типы контента
+  - `index.ts` — экспорт всех языков
+  - `ru.ts`, `en.ts`, `sr.ts`, `sr-cyrl.ts` — контент на 4 языках
 - `src/pages/home/ui/HomePage.tsx` — главная.
 - `src/pages/track/ui/TrackPage.tsx` — игра/трек.
 - `src/pages/about/ui/AboutPage.tsx` — о проекте.
@@ -173,7 +179,8 @@
 - Unit тесты для доменной логики в `src/shared/lib/*.test.ts`
 - Unit тесты для storage в `src/shared/radio/types/*.test.ts`
 - Unit тесты для storage в `src/entities/progress/model/*.test.ts`
-- Тесты для store в `src/entities/progress/store/*.test.ts`
+- Unit тесты для store в `src/entities/progress/store/*.test.ts`
+- Unit тесты для LanguageContext в `src/shared/contexts/LanguageContext.test.tsx`
 
 ### 7.3. Покрытие
 - AudioContext: 7 тестов
@@ -181,9 +188,11 @@
 - UIDialogsContext: 7 тестов  
 - TrackNavigationContext: 5 тестов
 - TrackGameUIContext: 7 тестов
+- LanguageContext: 7 тестов
 - Доменная логика: 30 тестов
 - Radio storage: 7 тестов
-- Storage/Store: 51 тест
+- Storage/Store: 51 тестов
+- **Общее: 122 теста** с полным покрытием функционала интернационализации
 
 ## 8. Перед завершением любой задачи
 

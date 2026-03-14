@@ -2,6 +2,7 @@ import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 import { Button, Chip, Divider, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type ResultCardBlockProps = {
   isSolved: boolean;
@@ -25,24 +26,27 @@ export const ResultCardBlock = ({
   revealedSerbianTitle,
   sunoUrl,
   onOpenShare,
-}: ResultCardBlockProps) => (
+}: ResultCardBlockProps) => {
+  const { t } = useTranslation('tracks');
+  
+  return (
   <>
     <Divider />
 
     <Stack spacing={1}>
       {isSolved ? (
-        <Chip color="success" label="Угадан честно" />
+        <Chip color="success" label={t('solvedFairly')} />
       ) : (
-        <Chip color="warning" label="Раскрыт через сдачу" />
+        <Chip color="warning" label={t('revealedByGiveUp')} />
       )}
 
-      <Typography>Сербское: {serbianTitle}</Typography>
-      <Typography>Русское: {russianTitle}</Typography>
-      <Typography>Оригинал: {originalTitle}</Typography>
+      <Typography>{t('serbian')}: {serbianTitle}</Typography>
+      <Typography>{t('russian')}: {russianTitle}</Typography>
+      <Typography>{t('original')}: {originalTitle}</Typography>
 
       <Typography>
-        Попытки: {attemptsCount} | Подсказок: {hintsUsedCount} | Явная подсказка:{' '}
-        {revealedSerbianTitle ? 'да' : 'нет'}
+        {t('attempts')}: {attemptsCount} | {t('hintsUsed')}: {hintsUsedCount} | {t('explicitHint')}:{' '}
+        {revealedSerbianTitle ? t('yes') : t('no')}
       </Typography>
 
       {sunoUrl ? (
@@ -58,10 +62,10 @@ export const ResultCardBlock = ({
           fullWidth
           sx={{ fontWeight: 700 }}
         >
-          Открыть в SUNO
+          {t('openInSuno')}
         </Button>
       ) : (
-        <Typography color="text.secondary">Ссылка SUNO недоступна.</Typography>
+        <Typography color="text.secondary">{t('sunoLinkUnavailable')}</Typography>
       )}
 
       <Button
@@ -76,9 +80,10 @@ export const ResultCardBlock = ({
           color: '#0f1115',
         }}
       >
-        Поделиться загадкой
+        {t('sharePuzzle')}
       </Button>
     </Stack>
   </>
 );
+};
 

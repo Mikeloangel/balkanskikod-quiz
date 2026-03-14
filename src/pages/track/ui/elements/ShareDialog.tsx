@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export type SharePayload = {
   title: string;
@@ -33,9 +34,12 @@ export const ShareDialog = ({
   hasWebShare,
   feedback,
   onCopy,
-}: ShareDialogProps) => (
+}: ShareDialogProps) => {
+  const { t } = useTranslation('tracks');
+  
+  return (
   <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-    <DialogTitle>Поделиться загадкой</DialogTitle>
+    <DialogTitle>{t('shareTitle')}</DialogTitle>
     <DialogContent>
       <Stack spacing={2} sx={{ pt: 1 }}>
         <Paper
@@ -48,7 +52,7 @@ export const ShareDialog = ({
         >
           <Stack spacing={1}>
             <Typography variant="overline" color="text.secondary">
-              Предпросмотр шаринга
+              {t('sharePreview')}
             </Typography>
             <Typography variant="h6">{payload.title}</Typography>
             <Typography>{payload.text}</Typography>
@@ -56,13 +60,13 @@ export const ShareDialog = ({
               {payload.url}
             </Typography>
             <Typography color="text.secondary">
-              Web Share API: {hasWebShare ? 'доступен' : 'недоступен, будет копирование'}
+              Web Share API: {hasWebShare ? t('webShareAvailable') : t('webShareNotAvailable')}
             </Typography>
           </Stack>
         </Paper>
 
         <TextField
-          label="Ссылка для ручного копирования"
+          label={t('shareLinkCopy')}
           value={payload.url}
           fullWidth
           inputProps={{ readOnly: true }}
@@ -74,12 +78,13 @@ export const ShareDialog = ({
     </DialogContent>
     <DialogActions>
       <Button onClick={onClose} color="inherit">
-        Закрыть
+        {t('close')}
       </Button>
       <Button onClick={onCopy} color="secondary">
-        Скопировать ссылку
+        {t('copyLink')}
       </Button>
     </DialogActions>
   </Dialog>
 );
+};
 

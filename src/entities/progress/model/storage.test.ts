@@ -305,7 +305,7 @@ describe('storage', () => {
       result = markTrackSolved('track-001')
       
       expect(result.status).toBe('solved')
-      expect(result.solvedAt).toBe(solvedAt)
+      expect(result.solvedAt).toBe(solvedAt) // Should not change timestamp
     })
   })
 

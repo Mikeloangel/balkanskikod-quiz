@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Container, Stack } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { tracks } from '@/shared/config';
 import type { Track } from '@/shared/models';
 import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
@@ -64,6 +65,7 @@ const TrackPageContent = ({ track }: TrackPageContentProps) => {
 };
 
 const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
+  const { t } = useTranslation('tracks');
   const { state, actions } = useProgressStore();
   const progress = selectTrackProgress(state, track.id);
   const { state: audioState } = useAudioState();
@@ -160,7 +162,7 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
 
   const handleManualCopy = async () => {
     await navigator.clipboard.writeText(sharePayload.url);
-    dialogsActions.setShareFeedback('Ссылка скопирована!');
+    dialogsActions.setShareFeedback(t('linkCopied'));
   };
 
   const handleOpenShare = () => {
@@ -220,7 +222,7 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
                       onChange={audioActions.setInputValue}
                       onSubmit={handleSubmit}
                       showHintButton={gameUIState.canShowHintButton}
-                      hintButtonLabel={gameUIState.canUseHint ? 'Подсказка' : 'Показать сербское название'}
+                      hintButtonLabel={gameUIState.canUseHint ? t('hint') : t('showSerbianTitle')}
                       onHint={handleHint}
                       onGiveUp={handleOpenGiveUp}
                     />

@@ -1,13 +1,15 @@
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { PlayArrow, Pause } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { useRadio } from '@/shared/contexts';
 
 export const PlayControls: React.FC = () => {
+  const { t } = useTranslation('radio');
   const { state, play, pause } = useRadio();
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Tooltip title={state.isPlaying ? 'Пауза' : 'Играть'}>
+      <Tooltip title={state.isPlaying ? t('pause') : t('play')}>
         <IconButton
           onClick={state.isPlaying ? pause : play}
           sx={{

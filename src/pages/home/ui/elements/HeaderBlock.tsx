@@ -1,5 +1,7 @@
 import { Stack, IconButton, Box, Typography } from '@mui/material';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
+import { LanguageSelector } from '@/shared/i18n';
+import { useTranslation } from 'react-i18next';
 
 type HeaderBlockProps = {
   title: string;
@@ -7,6 +9,8 @@ type HeaderBlockProps = {
 };
 
 export const HeaderBlock = ({ title, onShareClick }: HeaderBlockProps) => {
+  const { t } = useTranslation('pages');
+
   return (
     <Stack
       // direction={{ xs: 'column', md: 'row' }}
@@ -20,11 +24,11 @@ export const HeaderBlock = ({ title, onShareClick }: HeaderBlockProps) => {
           {title}
         </Typography>
         <Typography color="text.secondary">
-          Угадай мелодию по фрагменту и проверь, насколько ты в теме.
+          {t('home.subtitle')}
         </Typography>
       </Box>
 
-      <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <IconButton
           onClick={onShareClick}
           sx={{
@@ -40,6 +44,9 @@ export const HeaderBlock = ({ title, onShareClick }: HeaderBlockProps) => {
         >
           <ShareRoundedIcon />
         </IconButton>
+        
+        {/* Переключатель языка */}
+        <LanguageSelector />
       </Box>
     </Stack>
   );

@@ -7,6 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type ResetDialogProps = {
   open: boolean;
@@ -15,30 +16,32 @@ type ResetDialogProps = {
 };
 
 export const ResetDialog = ({ open, onClose, onReset }: ResetDialogProps) => {
+  const { t } = useTranslation('common');
+  
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Сбросить прогресс</DialogTitle>
+      <DialogTitle>{t('resetDialog.title')}</DialogTitle>
       <DialogContent>
         <Stack spacing={1} sx={{ pt: 1 }}>
           <Typography>
-            Будет удален весь локальный игровой прогресс:
+            {t('resetDialog.description')}
           </Typography>
           <Typography color="text.secondary">
-            - статусы треков (`not_started / in_progress / solved / revealed`)
+            {t('resetDialog.itemStatuses')}
           </Typography>
-          <Typography color="text.secondary">- история попыток и их количество</Typography>
-          <Typography color="text.secondary">- использование подсказок и явных подсказок</Typography>
+          <Typography color="text.secondary">{t('resetDialog.itemAttempts')}</Typography>
+          <Typography color="text.secondary">{t('resetDialog.itemHints')}</Typography>
           <Typography color="warning.main" fontWeight={600}>
-            Это действие нельзя отменить.
+            {t('resetDialog.warning')}
           </Typography>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Отмена
+          {t('resetDialog.cancel')}
         </Button>
         <Button color="error" onClick={onReset}>
-          Да, удалить прогресс
+          {t('resetDialog.confirm')}
         </Button>
       </DialogActions>
     </Dialog>

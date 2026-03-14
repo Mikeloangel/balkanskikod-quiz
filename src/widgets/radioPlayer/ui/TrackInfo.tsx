@@ -1,8 +1,10 @@
 import { Box, Typography, Tooltip, Button } from '@mui/material';
 import { AutoAwesomeRounded } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { useRadio } from '@/shared/contexts';
 
 export const TrackInfo: React.FC = () => {
+  const { t } = useTranslation('radio');
   const { currentTrack, openTrackInSuno } = useRadio();
 
   if (!currentTrack) {
@@ -37,7 +39,7 @@ export const TrackInfo: React.FC = () => {
         </Typography>
       </Box>
       
-      <Tooltip title="Открыть в Suno">
+      <Tooltip title={t('openInSuno')}>
         <Button
           size="small"
           onClick={openTrackInSuno}

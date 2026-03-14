@@ -6,4 +6,7 @@ export * from './uiDialogsUtils';
 export { TrackNavigationProvider, useTrackNavigation } from './TrackNavigationContext';
 export { TrackGameUIProvider, useTrackGameUI } from './TrackGameUIContext';
 export { RadioProvider, useRadio } from './RadioProvider';
-export { AudioControlProvider, useAudioControl } from './AudioControlContext';
+export { AudioControlProvider } from './AudioControlContext';
+export { useAudioControl } from './useAudioControl';
+export { LanguageProvider } from './LanguageContext';
+export { useLanguage, type Language } from './LanguageContextExports';

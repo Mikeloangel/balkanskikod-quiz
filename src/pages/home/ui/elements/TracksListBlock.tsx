@@ -9,14 +9,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import PendingRoundedIcon from '@mui/icons-material/PendingRounded';
 import NotStartedRoundedIcon from '@mui/icons-material/NotStartedRounded';
-
-
-const statusLabelMap = {
-  not_started: 'Не начат',
-  in_progress: 'В процессе',
-  solved: 'Угадан',
-  revealed: 'Раскрыт',
-} as const;
+import { useTranslation } from 'react-i18next';
 
 const getDifficultyStars = (difficulty: number): string =>
   '★'.repeat(difficulty).padEnd(5, '☆');
@@ -27,10 +20,19 @@ type TracksListBlockProps = {
 };
 
 export const TracksListBlock = ({ tracks, storage }: TracksListBlockProps) => {
+  const { t: tPages } = useTranslation('pages');
+  const { t: tCommon } = useTranslation('common');
+  
+  const statusLabelMap = {
+    not_started: tCommon('trackStatus.notStarted'),
+    in_progress: tCommon('trackStatus.inProgress'),
+    solved: tCommon('trackStatus.solved'),
+    revealed: tCommon('trackStatus.revealed'),
+  } as const;
   return (
     <Paper sx={{ p: 2 }}>
       <Typography variant="h6" mb={2}>
-        Треки
+        {tPages('home.tracks.title')}
       </Typography>
 
       <Stack spacing={1.5}>
@@ -63,7 +65,7 @@ export const TracksListBlock = ({ tracks, storage }: TracksListBlockProps) => {
                     flexWrap="wrap"
                   >
                     {showNew ? (
-                      <Tooltip title="Новое">
+                      <Tooltip title={tPages('home.tracks.new')}>
                         <Chip size="small" color="primary" icon={<NewReleasesRoundedIcon sx={{ fontSize: 16 }} />} />
                       </Tooltip>
                     ) : null}
@@ -115,10 +117,10 @@ export const TracksListBlock = ({ tracks, storage }: TracksListBlockProps) => {
                     </Typography>
                   </Stack>
                   <Typography color="text.secondary">
-                    {!hasUserProgress ? `Статус: ${statusLabelMap[status]} | ` : ''}
-                    Сложность:{' '}
+                    {!hasUserProgress ? `${tPages('home.tracks.status')}: ${statusLabelMap[status]} | ` : ''}
+                    {tPages('home.tracks.difficulty')}:{' '}
                     {getDifficultyStars(track.difficulty)}
-                    {attempts > 0 ? ` | Попыток: ${attempts}` : ''}
+                    {attempts > 0 ? ` | ${tPages('home.tracks.attempts')}: ${attempts}` : ''}
                   </Typography>
                 </Box>
 
