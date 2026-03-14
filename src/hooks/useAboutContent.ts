@@ -10,6 +10,13 @@ const contentMap = {
   'sr-cyrl': srCyrl,
 } as const;
 
+const languageToImportMap = {
+  ru: 'ru',
+  en: 'en', 
+  sr: 'sr',
+  'sr_cyrl': 'sr-cyrl',
+} as const;
+
 export const useAboutContent = () => {
   const { i18n } = useTranslation();
   const [content, setContent] = useState<AboutContent | null>(null);
@@ -17,7 +24,8 @@ export const useAboutContent = () => {
   useEffect(() => {
     const loadContent = async () => {
       try {
-        const module = await import(`@/content/about/${i18n.language}.ts`);
+        const importPath = languageToImportMap[i18n.language as keyof typeof languageToImportMap] || 'ru';
+        const module = await import(`@/content/about/${importPath}.ts`);
         setContent(module.default);
       } catch {
         // Fallback на русский
