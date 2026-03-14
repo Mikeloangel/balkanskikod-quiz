@@ -149,7 +149,7 @@ export const markTrackSolved = (trackId: string): TrackProgress =>
   patchTrackProgress(trackId, (current) => ({
     ...current,
     status: 'solved',
-    solvedAt: new Date().toISOString(),
+    solvedAt: current.status === 'solved' ? current.solvedAt : new Date().toISOString(),
     revealedByGiveUp: false,
   }));
 

@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import { vi, beforeEach, expect, describe, it } from 'vitest';
 import i18n from '@/shared/i18n';
-import { LanguageProvider, useLanguage } from './LanguageContext';
+import { LanguageProvider } from './LanguageContext';
+import { useLanguage } from '@/shared/contexts';
 
 // Test component to use the hook
 const TestComponent: React.FC = () => {
@@ -42,7 +43,7 @@ describe('LanguageContext', () => {
     const availableLangsEl = screen.getByTestId('available-languages');
     
     expect(currentLangEl.textContent).toBe('ru');
-    expect(availableLangsEl.textContent).toBe('ru,en,sr,sr-cyrl');
+    expect(availableLangsEl.textContent).toBe('ru,en,sr,sr_cyrl');
   });
 
   it('should have correct available languages', () => {
@@ -50,7 +51,7 @@ describe('LanguageContext', () => {
     
     const availableLanguages = screen.getByTestId('available-languages').textContent;
     
-    expect(availableLanguages).toBe('ru,en,sr,sr-cyrl');
+    expect(availableLanguages).toBe('ru,en,sr,sr_cyrl');
   });
 
   it('should throw error when useLanguage is used outside provider', () => {
@@ -58,7 +59,7 @@ describe('LanguageContext', () => {
     
     expect(() => {
       render(<TestComponent />);
-    }).toThrow('useLanguage must be used within a LanguageProvider');
+    }).toThrowError('useLanguage must be used within LanguageProvider');
     
     consoleError.mockRestore();
   });

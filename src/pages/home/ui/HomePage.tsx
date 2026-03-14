@@ -48,7 +48,7 @@ export const HomePage = () => {
         text: tPages('home.shareText', { appName }),
       };
     },
-    [appName],
+    [appName, tPages],
   );
   const hasWebShare = Boolean(navigator.share);
 

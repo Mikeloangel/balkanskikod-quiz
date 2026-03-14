@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useRef, useEffect, type ReactNode } from 'react';
 import type { AudioActions, AudioContextType } from './audioTypes';
-import { registerGameAudio } from './AudioControlContext';
+import { registerGameAudio } from './audioGameUtils';
 
 const AudioContext = createContext<AudioContextType | null>(null);
 
@@ -83,7 +83,7 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({
       audio.removeEventListener('ended', handleEnded);
       
       // Отчищаем ссылку при размонтировании
-      registerGameAudio(null as any);
+      registerGameAudio({ pause: () => {} });
     };
   }, [onEnded, onError]);
 

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useRef, useEffect, useCallback, ty
 import { radioTracks } from '@/shared/config/radioTracks';
 import { getRadioStorage, setRadioStorage } from '@/shared/radio';
 import type { RadioTrack, RadioState } from '@/shared/radio';
-import { getGameAudioRef } from './AudioControlContext';
+import { getGameAudioRef } from './audioGameUtils';
 
 interface RadioContextType {
   state: RadioState;
@@ -245,11 +245,13 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       trackId = radioTracks[randomIndex]?.id || null;
     }
 
-    setState(prev => ({
-      ...prev,
-      currentTrackId: trackId,
-      totalPlayedTime: storage.totalPlayedTime,
-    }));
+    setTimeout(() => {
+      setState(prev => ({
+        ...prev,
+        currentTrackId: trackId,
+        totalPlayedTime: storage.totalPlayedTime,
+      }));
+    }, 0);
   }, []);
 
   const resolveLocalTrackUrl = (localPath: string): string => {
@@ -331,7 +333,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       audio.pause();
       audio.src = '';
     };
-  }, [currentTrack, nextTrack, nextTrackAndPlay]);
+  }, [currentTrack, nextTrack, nextTrackAndPlay, state.totalPlayedTime, state.volume]);
 
   useEffect(() => {
     if (audioRef.current) {

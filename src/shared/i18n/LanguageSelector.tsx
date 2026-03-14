@@ -6,7 +6,7 @@ import {
   FormControl,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
-import { useLanguage } from '@/shared/contexts/LanguageContext';
+import { useLanguage, type Language } from '@/shared/contexts';
 
 export const LanguageSelector: React.FC = () => {
   const { changeLanguage, availableLanguages } = useLanguage();
@@ -15,8 +15,7 @@ export const LanguageSelector: React.FC = () => {
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newLanguage = event.target.value as string;
-    console.log('LanguageSelector: handleChange called with:', newLanguage);
-    changeLanguage(newLanguage as any);
+    changeLanguage(newLanguage as Language);
   };
 
   return (
