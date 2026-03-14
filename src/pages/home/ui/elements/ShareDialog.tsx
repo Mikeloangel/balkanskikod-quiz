@@ -10,6 +10,7 @@ import {
   TextField,
   Alert,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 type ShareDialogProps = {
   open: boolean;
@@ -30,27 +31,29 @@ export const ShareDialog = ({
   onManualCopy,
   feedback,
 }: ShareDialogProps) => {
+  const { t } = useTranslation('home');
+  
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Поделиться проектом</DialogTitle>
+      <DialogTitle>{t('shareProject')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
           <Typography color="text.secondary">
-            Ниже превью того, что пойдет в системный диалог шаринга.
+            {t('sharePreview')}
           </Typography>
           <Paper variant="outlined" sx={{ p: 2 }}>
             <Stack spacing={1}>
-              <Typography variant="subtitle2">Title: {sharePayload.title}</Typography>
-              <Typography variant="subtitle2">Text: {sharePayload.text}</Typography>
-              <Typography variant="subtitle2">URL: {sharePayload.url}</Typography>
+              <Typography variant="subtitle2">{t('title')}: {sharePayload.title}</Typography>
+              <Typography variant="subtitle2">{t('text')}: {sharePayload.text}</Typography>
+              <Typography variant="subtitle2">{t('url')}: {sharePayload.url}</Typography>
               <Typography color="text.secondary">
-                Web Share API: {hasWebShare ? 'доступен' : 'недоступен, будет копирование'}
+                Web Share API: {hasWebShare ? t('webShareAvailable') : t('webShareNotAvailable')}
               </Typography>
             </Stack>
           </Paper>
 
           <TextField
-            label="Ссылка для ручного копирования"
+            label={t('linkForManualCopy')}
             value={sharePayload.url}
             fullWidth
             inputProps={{ readOnly: true }}
@@ -61,12 +64,12 @@ export const ShareDialog = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          Закрыть
+          {t('close')}
         </Button>
         <Button onClick={onManualCopy} color="secondary">
-          Скопировать ссылку
+          {t('copyLink')}
         </Button>
-        <Button onClick={onShare}>Поделиться</Button>
+        <Button onClick={onShare}>{t('share')}</Button>
       </DialogActions>
     </Dialog>
   );
