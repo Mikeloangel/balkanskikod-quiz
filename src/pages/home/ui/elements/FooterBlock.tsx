@@ -1,16 +1,19 @@
 import { Stack, Typography, Button, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 type FooterBlockProps = {
   onResetClick: () => void;
 };
 
 export const FooterBlock = ({ onResetClick }: FooterBlockProps) => {
+  const { t } = useTranslation('pages');
+  
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <Typography color="text.secondary">
         <Link component={RouterLink} to="/about" underline="hover">
-          О проекте
+          {t('home.footer.aboutProject')}
         </Link>
       </Typography>
       <Button
@@ -19,7 +22,7 @@ export const FooterBlock = ({ onResetClick }: FooterBlockProps) => {
         variant="outlined"
         onClick={onResetClick}
       >
-        Сбросить прогресс
+        {t('home.footer.resetProgress')}
       </Button>
     </Stack>
   );

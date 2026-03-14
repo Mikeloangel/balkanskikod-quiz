@@ -19,10 +19,10 @@ import srPages from './locales/sr/pages';
 import srTracks from './locales/sr/tracks';
 import srMeta from './locales/sr/meta';
 
-import srCyrlCommon from './locales/sr-cyrl/common';
-import srCyrlPages from './locales/sr-cyrl/pages';
-import srCyrlTracks from './locales/sr-cyrl/tracks';
-import srCyrlMeta from './locales/sr-cyrl/meta';
+import srCyrlCommon from './locales/sr_cyrl/common';
+import srCyrlPages from './locales/sr_cyrl/pages';
+import srCyrlTracks from './locales/sr_cyrl/tracks';
+import srCyrlMeta from './locales/sr_cyrl/meta';
 
 export const resources = {
   ru: {
@@ -43,13 +43,21 @@ export const resources = {
     tracks: srTracks,
     meta: srMeta,
   },
-  'sr-cyrl': {
+  'sr_cyrl': {
     common: srCyrlCommon,
     pages: srCyrlPages,
     tracks: srCyrlTracks,
     meta: srCyrlMeta,
   },
 } as const;
+
+// Debug: Log resources
+console.log('i18n resources loaded:', {
+  ru: !!ruCommon,
+  en: !!enCommon,
+  sr: !!srCommon,
+  'sr_cyrl': !!srCyrlCommon,
+});
 
 export const defaultLanguage: Language = 'ru';
 
@@ -58,8 +66,15 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: defaultLanguage,
+    fallbackLng: 'ru',
     debug: import.meta.env.DEV,
+    
+    // Explicitly set supported languages
+    supportedLngs: ['ru', 'en', 'sr', 'sr_cyrl'],
+    
+    // Disable language conversion
+    load: 'all',
+    preload: ['ru', 'en', 'sr', 'sr_cyrl'],
     
     interpolation: {
       escapeValue: false, // React already escapes
@@ -74,6 +89,9 @@ i18n
     react: {
       useSuspense: false,
     },
+    
+    // Ensure fallback language works correctly
+    fallbackNS: ['common', 'pages', 'tracks', 'meta'],
   });
 
 export default i18n;

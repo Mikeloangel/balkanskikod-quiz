@@ -16,7 +16,8 @@ import { ShareDialog } from './elements/ShareDialog';
 import { ResetDialog } from './elements/ResetDialog';
 
 export const HomePage = () => {
-  const { t } = useTranslation(['pages', 'meta']);
+  const { t: tPages } = useTranslation('pages');
+  const { t: tMeta } = useTranslation('meta');
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
@@ -44,7 +45,7 @@ export const HomePage = () => {
       return {
         url: `${appBaseUrl}/#/`,
         title: appName,
-        text: t('pages.home.shareText', { appName }),
+        text: tPages('home.shareText', { appName }),
       };
     },
     [appName],
@@ -58,18 +59,18 @@ export const HomePage = () => {
       sharePayload.text,
     );
     if (success) {
-      setShareFeedback(t('pages.home.shareSuccess'));
+      setShareFeedback(tPages('home.shareSuccess'));
     } else {
-      setShareFeedback(t('pages.home.shareError'));
+      setShareFeedback(tPages('home.shareError'));
     }
   };
 
   const handleManualCopy = async () => {
     try {
       await navigator.clipboard.writeText(sharePayload.url);
-      setShareFeedback(t('pages.home.copySuccess'));
+      setShareFeedback(tPages('home.copySuccess'));
     } catch {
-      setShareFeedback(t('pages.home.copyError'));
+      setShareFeedback(tPages('home.copyError'));
     }
   };
 
@@ -81,8 +82,8 @@ export const HomePage = () => {
   return (
     <>
       <MetaTags 
-        title={t('meta.title')}
-        description={t('meta.description')}
+        title={tMeta('title')}
+        description={tMeta('description')}
       />
       <Container maxWidth="lg" sx={{ py: 4, pb: 18 }}>
         <Stack spacing={3}>

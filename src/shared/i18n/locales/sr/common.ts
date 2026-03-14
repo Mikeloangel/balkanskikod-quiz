@@ -26,4 +26,20 @@ export default {
   progress: "Napredak",
   time: "Vreme",
   duration: "Trajanje",
+  trackStatus: {
+    notStarted: "Nije započeto",
+    inProgress: "U toku",
+    solved: "Pogođeno",
+    revealed: "Otkriveno"
+  },
+  resetDialog: {
+    title: "Resetuj napredak",
+    description: "Sav lokalni napredak igre će biti obrisan:",
+    itemStatuses: "- statusi pesama (`not_started / in_progress / solved / revealed`)",
+    itemAttempts: "- istorija pokušaja i njihov broj",
+    itemHints: "- korišćenje pomoći i eksplicitnih pomoći",
+    warning: "Ova akcija se ne može poništiti.",
+    cancel: "Otkaži",
+    confirm: "Da, obriši napredak"
+  }
 };

@@ -13,7 +13,28 @@ export default {
       title: "Статистика",
       totalTracks: "Укупно песама",
       solvedTracks: "Погођено",
+      revealedTracks: "Није погођено",
+      inProgressTracks: "У току",
+      solveRatePercent: "Прецизност",
+      averageAttempts: "Просек покушаја",
+      solvedWithoutHints: "Без помоћи",
+      solvedWithSerbianHint: "Са српском помоћи",
       newTracks: "Нових"
+    },
+    tracks: {
+      title: "Песме",
+      difficulty: "Тежина",
+      attempts: "Покушаја",
+      status: "Статус",
+      new: "Ново"
+    },
+    footer: {
+      aboutProject: "О пројекту",
+      resetProgress: "Ресетуј напредак"
+    },
+    lastSolved: {
+      title: "Недавно погођени",
+      empty: "Тренутно празно. Погоди бар једну песму."
     }
   },
   track: {

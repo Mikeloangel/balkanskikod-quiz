@@ -13,7 +13,28 @@ export default {
       title: "Статистика",
       totalTracks: "Всего треков",
       solvedTracks: "Угадано",
+      revealedTracks: "Не угадано",
+      inProgressTracks: "В процессе",
+      solveRatePercent: "Точность",
+      averageAttempts: "Ср. попыток",
+      solvedWithoutHints: "Без подсказок",
+      solvedWithSerbianHint: "С явной подсказкой",
       newTracks: "Новых"
+    },
+    tracks: {
+      title: "Треки",
+      difficulty: "Сложность",
+      attempts: "Попыток",
+      status: "Статус",
+      new: "Новое"
+    },
+    footer: {
+      aboutProject: "О проекте",
+      resetProgress: "Сбросить прогресс"
+    },
+    lastSolved: {
+      title: "Последние угаданные",
+      empty: "Пока пусто. Угадай хотя бы один трек."
     }
   },
   track: {

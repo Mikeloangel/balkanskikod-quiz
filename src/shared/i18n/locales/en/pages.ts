@@ -13,7 +13,28 @@ export default {
       title: "Statistics",
       totalTracks: "Total tracks",
       solvedTracks: "Solved",
+      revealedTracks: "Not solved",
+      inProgressTracks: "In progress",
+      solveRatePercent: "Accuracy",
+      averageAttempts: "Avg. attempts",
+      solvedWithoutHints: "Without hints",
+      solvedWithSerbianHint: "With Serbian hint",
       newTracks: "New"
+    },
+    tracks: {
+      title: "Tracks",
+      difficulty: "Difficulty",
+      attempts: "Attempts",
+      status: "Status",
+      new: "New"
+    },
+    footer: {
+      aboutProject: "About project",
+      resetProgress: "Reset progress"
+    },
+    lastSolved: {
+      title: "Recently solved",
+      empty: "Empty for now. Guess at least one track."
     }
   },
   track: {

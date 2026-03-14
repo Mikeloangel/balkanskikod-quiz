@@ -26,4 +26,20 @@ export default {
   progress: "Progress",
   time: "Time",
   duration: "Duration",
+  trackStatus: {
+    notStarted: "Not started",
+    inProgress: "In progress",
+    solved: "Solved",
+    revealed: "Revealed"
+  },
+  resetDialog: {
+    title: "Reset progress",
+    description: "All local game progress will be deleted:",
+    itemStatuses: "- track statuses (`not_started / in_progress / solved / revealed`)",
+    itemAttempts: "- attempt history and count",
+    itemHints: "- hints and explicit hints usage",
+    warning: "This action cannot be undone.",
+    cancel: "Cancel",
+    confirm: "Yes, delete progress"
+  }
 };

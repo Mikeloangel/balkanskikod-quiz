@@ -26,4 +26,20 @@ export default {
   progress: "Напредак",
   time: "Време",
   duration: "Трајање",
+  trackStatus: {
+    notStarted: "Није започето",
+    inProgress: "У току",
+    solved: "Погођено",
+    revealed: "Откривено"
+  },
+  resetDialog: {
+    title: "Ресетуј напредак",
+    description: "Сав локални напредак игре ће бити обрисан:",
+    itemStatuses: "- статуси песама (`not_started / in_progress / solved / revealed`)",
+    itemAttempts: "- историја покушаја и њихов број",
+    itemHints: "- коришћење помоћи и експлицитних помоћи",
+    warning: "Ова акција се не може поништити.",
+    cancel: "Откажи",
+    confirm: "Да, обриши напредак"
+  }
 };

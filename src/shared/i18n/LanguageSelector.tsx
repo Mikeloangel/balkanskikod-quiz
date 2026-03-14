@@ -15,6 +15,7 @@ export const LanguageSelector: React.FC = () => {
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     const newLanguage = event.target.value as string;
+    console.log('LanguageSelector: handleChange called with:', newLanguage);
     changeLanguage(newLanguage as any);
   };
 

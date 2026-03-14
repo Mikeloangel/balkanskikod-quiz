@@ -1,4 +1,4 @@
-export type Language = 'ru' | 'en' | 'sr' | 'sr-cyrl';
+export type Language = 'ru' | 'en' | 'sr' | 'sr_cyrl';
 
 export interface AvailableLanguage {
   code: Language;

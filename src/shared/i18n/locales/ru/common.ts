@@ -26,4 +26,20 @@ export default {
   progress: "Прогресс",
   time: "Время",
   duration: "Длительность",
+  trackStatus: {
+    notStarted: "Не начат",
+    inProgress: "В процессе",
+    solved: "Угадан",
+    revealed: "Раскрыт"
+  },
+  resetDialog: {
+    title: "Сбросить прогресс",
+    description: "Будет удален весь локальный игровой прогресс:",
+    itemStatuses: "- статусы треков (`not_started / in_progress / solved / revealed`)",
+    itemAttempts: "- история попыток и их количество",
+    itemHints: "- использование подсказок и явных подсказок",
+    warning: "Это действие нельзя отменить.",
+    cancel: "Отмена",
+    confirm: "Да, удалить прогресс"
+  }
 };
