@@ -42,6 +42,7 @@ describe('Radio Storage', () => {
         currentTrackId: null,
         playbackStartTime: null,
         totalPlayedTime: 0,
+        volume: 0.7,
       });
     });
 
@@ -55,7 +56,7 @@ describe('Radio Storage', () => {
       localStorageMock.setItem(RADIO_STORAGE_KEY, JSON.stringify(testData));
       const storage = getRadioStorage();
       
-      expect(storage).toEqual(testData);
+      expect(storage).toEqual({ ...testData, volume: 0.7 });
     });
 
     it('should return default storage when localStorage has invalid data', () => {
@@ -70,6 +71,7 @@ describe('Radio Storage', () => {
         currentTrackId: null,
         playbackStartTime: null,
         totalPlayedTime: 0,
+        volume: 0.7,
       });
       
       consoleSpy.mockRestore();
@@ -88,7 +90,7 @@ describe('Radio Storage', () => {
       
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         RADIO_STORAGE_KEY,
-        JSON.stringify(testData)
+        JSON.stringify({ ...testData, volume: 0.7 })
       );
     });
 
