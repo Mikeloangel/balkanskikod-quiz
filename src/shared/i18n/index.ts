@@ -89,9 +89,12 @@ i18n
     },
     
     detection: {
-      order: ['localStorage'],
+      order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
       lookupLocalStorage: 'balkanski-kod-language',
+      // sr-Cyrl / sr-Cyrl-RS → sr_cyrl (нестандартный код, i18next сам не смапит)
+      convertDetectedLanguage: (lng: string) =>
+        /^sr[-_]Cyrl/i.test(lng) ? 'sr_cyrl' : lng,
     },
     
     react: {
