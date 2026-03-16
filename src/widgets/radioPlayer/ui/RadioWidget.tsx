@@ -1,13 +1,16 @@
-import { Box, Paper, useTheme, useMediaQuery, Alert } from '@mui/material';
+import { Box, Paper, Alert } from '@mui/material';
 import { useRadio } from '@/shared/contexts';
-import { TrackInfo } from './TrackInfo';
 import { PlayControls } from './PlayControls';
+import { TrackInfo } from './TrackInfo';
 import { VolumeControl } from './VolumeControl';
+import { SunoButton } from './SunoButton';
+import { CoverArt } from './CoverArt';
 import { ProgressBar } from './ProgressBar';
 
+const WIDGET_HEIGHT = 56;
+const PROGRESS_HEIGHT = 5;
+
 export const RadioWidget: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { state, currentTrack, resetError } = useRadio();
 
   if (!currentTrack) {
@@ -22,18 +25,13 @@ export const RadioWidget: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        height: isMobile ? 120 : 80,
+        height: WIDGET_HEIGHT + PROGRESS_HEIGHT,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
         backgroundColor: 'rgba(25, 25, 25, 0.95)',
         backdropFilter: 'blur(10px)',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)',
         zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        px: 2,
-        py: isMobile ? 1 : 2,
-        gap: 2,
       }}
     >
       {state.error && (
@@ -52,49 +50,29 @@ export const RadioWidget: React.FC = () => {
         </Alert>
       )}
 
-      {isMobile ? (
-        // Мобильная верстка - две строки
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
-          {/* Первая строка: Play/Pause, название трека, кнопка SUNO */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-            <PlayControls />
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <TrackInfo />
-            </Box>
-          </Box>
-          
-          {/* Вторая строка: громкость и прогресс */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            gap: 2,
-            width: '100%',
-          }}>
-            <VolumeControl />
-            <ProgressBar />
-          </Box>
+      {/* Основной ряд: Play | TrackInfo | Volume | SUNO | Artwork */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          height: WIDGET_HEIGHT,
+          px: 1.5,
+        }}
+      >
+        <PlayControls />
+
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <TrackInfo />
         </Box>
-      ) : (
-        // Десктопная верстка - одна строка
-        <>
-          <PlayControls />
 
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <TrackInfo />
-          </Box>
+        <VolumeControl />
+        <SunoButton />
+        <CoverArt size={40} />
+      </Box>
 
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: isMobile ? 'space-between' : 'center', 
-            gap: 2,
-            minWidth: isMobile ? 200 : 300,
-          }}>
-            <VolumeControl />
-            <ProgressBar />
-          </Box>
-        </>
-      )}
+      {/* Прогресс-полоска внизу */}
+      <ProgressBar />
     </Paper>
   );
 };

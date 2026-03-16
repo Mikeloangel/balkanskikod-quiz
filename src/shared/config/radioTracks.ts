@@ -182,6 +182,38 @@ export const radioTracks: RadioTrack[] = [
       added: '2026-03-11',
     },
   },
+
+  {
+    id: 'track-013',
+    links: {
+      local: '/tracks/track-013.mp3',
+      suno: 'https://suno.com/s/jkuVAb7ArABVZrcR',
+    },
+    names: {
+      serbian: 'Пустињска ружа – Стинг',
+      russian: 'Пустынная розо - Стинг',
+      original: 'Desert Rose - Sting',
+    },
+    dates: {
+      added: '2026-03-16',
+    },
+  },
+
+  {
+    id: 'track-014',
+    links: {
+      local: '/tracks/track-014.mp3',
+      suno: 'https://suno.com/s/js5uygJ7Ab6hfRB7',
+    },
+    names: {
+      serbian: 'Стари хотел — Браво',
+      russian: 'Старый отель - Браво',
+      original: 'Старый отель - Браво',
+    },
+    dates: {
+      added: '2026-03-16',
+    },
+  },
 ];
 
 export const radioTracksSortedByAddedDate = [...radioTracks].sort(
