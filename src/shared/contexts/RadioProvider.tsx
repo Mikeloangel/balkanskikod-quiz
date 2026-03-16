@@ -3,6 +3,8 @@ import { radioTracks } from '@/shared/config/radioTracks';
 import { getRadioStorage, setRadioStorage } from '@/shared/radio';
 import type { RadioTrack, RadioState } from '@/shared/radio';
 import { getGameAudioRef } from './audioGameUtils';
+import { resolveLocalTrackUrl } from '@/shared/lib/url';
+import i18n from '@/shared/i18n';
 
 interface RadioContextType {
   state: RadioState;
@@ -69,7 +71,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         ...prev,
         currentTime,
         duration,
-        totalPlayedTime: prev.totalPlayedTime + 1, // Увеличиваем на 1 секунду, т.к. updateProgress вызывается каждую секунду
+        totalPlayedTime: prev.totalPlayedTime + 1000, // +1000мс, т.к. updateProgress вызывается каждую секунду
       }));
 
       setState(prev => {
@@ -78,7 +80,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
           return {
             ...prev,
             isPlaying: false,
-            error: 'Максимальное время прослушивания достигнуто (30 минут)',
+            error: i18n.t('errorMaxPlayTime', { ns: 'radio' }),
           };
         }
         return prev;
@@ -100,7 +102,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         setState(prev => ({
           ...prev,
           isPlaying: false,
-          error: 'Максимальное время прослушивания достигнуто (30 минут)',
+          error: i18n.t('errorMaxPlayTime', { ns: 'radio' }),
         }));
       }, remainingTime);
     }
@@ -148,7 +150,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         .catch(() => {
           setState(prev => ({
             ...prev,
-            error: 'Не удалось воспроизвести трек',
+            error: i18n.t('errorPlaybackFailed', { ns: 'radio' }),
           }));
         });
     }
@@ -180,10 +182,20 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
   }, [state.playbackStartTime, state.totalPlayedTime, state.currentTrackId, clearProgressInterval, clearMaxPlayTimeout]);
 
   const setVolume = useCallback((volume: number) => {
+    const clampedVolume = Math.max(0, Math.min(1, volume));
     if (audioRef.current) {
-      audioRef.current.volume = Math.max(0, Math.min(1, volume));
-      setState(prev => ({ ...prev, volume }));
+      audioRef.current.volume = clampedVolume;
     }
+    setState(prev => ({ ...prev, volume: clampedVolume }));
+
+    // Синхронизируем громкость с игровым плеером
+    const gameAudio = getGameAudioRef();
+    if (gameAudio) {
+      gameAudio.setVolume(clampedVolume);
+    }
+
+    // Сохраняем в localStorage
+    setRadioStorage({ volume: clampedVolume });
   }, []);
 
   const nextTrack = useCallback(() => {
@@ -251,23 +263,17 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       trackId = radioTracks[randomIndex]?.id || null;
     }
 
+    const restoredVolume = storage.volume ?? 0.7;
+
     setTimeout(() => {
       setState(prev => ({
         ...prev,
         currentTrackId: trackId,
         totalPlayedTime: storage.totalPlayedTime,
+        volume: restoredVolume,
       }));
     }, 0);
   }, []);
-
-  const resolveLocalTrackUrl = (localPath: string): string => {
-  if (/^https?:\/\//i.test(localPath)) {
-    return localPath;
-  }
-
-  const normalizedPath = localPath.replace(/^\/+/, '');
-  return `${import.meta.env.BASE_URL}${normalizedPath}`;
-};
 
   useEffect(() => {
     if (!currentTrack) return;
@@ -302,7 +308,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
     const handleError = () => {
       setState(prev => ({
         ...prev,
-        error: 'Ошибка загрузки трека',
+        error: i18n.t('errorLoadFailed', { ns: 'radio' }),
       }));
       // Проверяем лимит времени перед запуском следующего трека
       if (state.totalPlayedTime >= MAX_PLAY_TIME_MS) {
@@ -359,7 +365,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         setState(prev => ({
           ...prev,
           isPlaying: false,
-          error: 'Не удалось воспроизвести трек',
+          error: i18n.t('errorPlaybackFailed', { ns: 'radio' }),
         }));
       });
     }

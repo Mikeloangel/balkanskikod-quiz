@@ -5,4 +5,7 @@ export default {
   volume: "Громкость",
   mute: "Выкл",
   unmute: "Вкл",
+  errorMaxPlayTime: "Максимальное время прослушивания достигнуто (30 минут)",
+  errorPlaybackFailed: "Не удалось воспроизвести трек",
+  errorLoadFailed: "Ошибка загрузки трека",
 };

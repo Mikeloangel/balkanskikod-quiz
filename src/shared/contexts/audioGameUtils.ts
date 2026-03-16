@@ -1,5 +1,6 @@
 interface GameAudioRef {
   pause: () => void;
+  setVolume: (volume: number) => void;
 }
 
 interface ExtendedWindow extends Window {

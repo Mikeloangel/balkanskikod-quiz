@@ -5,4 +5,7 @@ export default {
   volume: "Јачина",
   mute: "Искључи",
   unmute: "Укључи",
+  errorMaxPlayTime: "Достигнуто је максимално време слушања (30 минута)",
+  errorPlaybackFailed: "Није могуће пустити песму",
+  errorLoadFailed: "Грешка при учитавању песме",
 };

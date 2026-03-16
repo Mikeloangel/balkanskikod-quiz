@@ -67,14 +67,6 @@ export const resources = {
   },
 } as const;
 
-// Debug: Log resources
-console.log('i18n resources loaded:', {
-  ru: !!ruCommon,
-  en: !!enCommon,
-  sr: !!srCommon,
-  'sr_cyrl': !!srCyrlCommon,
-});
-
 export const defaultLanguage: Language = 'ru';
 
 i18n

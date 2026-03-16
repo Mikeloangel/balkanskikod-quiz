@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 export const VolumeControl: React.FC = () => {
   const { state, setVolume } = useRadio();
-  const [previousVolume, setPreviousVolume] = useState(0.7);
+  const [previousVolume, setPreviousVolume] = useState(state.volume || 0.7);
 
   const handleVolumeChange = (_: Event, newValue: number | number[]) => {
     const newVolume = newValue as number;

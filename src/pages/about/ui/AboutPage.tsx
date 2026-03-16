@@ -1,24 +1,26 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { Container, Link, Paper, Stack, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
 import { LanguageSelector } from '@/shared/i18n';
 import { useAboutContent } from '@/hooks/useAboutContent';
 
 export const AboutPage = () => {
+  const { t } = useTranslation('pages');
   const content = useAboutContent();
 
   return (
     <>
       <MetaTags
-        title={content?.title || "О проекте"}
+        title={content?.title || t('about.title')}
       />
       <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
         <Paper sx={{ p: 3 }}>
           <Stack spacing={1.5}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Typography variant="h4" fontWeight={700}>
-                {content?.title || "О проекте"}
+                {content?.title || t('about.title')}
               </Typography>
               <LanguageSelector />
             </Stack>
@@ -29,12 +31,12 @@ export const AboutPage = () => {
             ))}
 
             <Typography>
-              <strong>{content?.technologies || "Технологии"}:</strong> React, TypeScript, MUI, Vite, i18next
+              <strong>{content?.technologies || t('about.technologies')}:</strong> React, TypeScript, MUI, Vite, i18next
             </Typography>
 
             <Stack spacing={0.5}>
               <Typography variant="subtitle2" color="text.secondary">
-                {content?.contacts.title || "Контакты"}
+                {content?.contacts.title || t('about.contacts')}
               </Typography>
               <Typography>
                 GitHub:{' '}
@@ -62,7 +64,7 @@ export const AboutPage = () => {
 
             <Typography>
               <Link component={RouterLink} to="/" underline="hover">
-                {content?.backToHome || "На главную"}
+                {content?.backToHome || t('about.backToHome')}
               </Link>
             </Typography>
           </Stack>

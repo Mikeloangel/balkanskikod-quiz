@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useRef, useEffect, type ReactNode } from 'react';
 import type { AudioActions, AudioContextType } from './audioTypes';
 import { registerGameAudio } from './audioGameUtils';
+import { getRadioStorage } from '@/shared/radio';
 
 const AudioContext = createContext<AudioContextType | null>(null);
 
@@ -40,9 +41,14 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({
     const audio = audioRef.current;
     if (!audio) return;
 
+    // Применяем сохранённую громкость
+    const storage = getRadioStorage();
+    audio.volume = storage.volume ?? 0.7;
+
     // Регистрируем аудио элемент для управления извне
     registerGameAudio({
       pause: () => audio.pause(),
+      setVolume: (volume: number) => { audio.volume = volume; },
     });
 
     const handleTimeUpdate = () => {
@@ -83,7 +89,7 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({
       audio.removeEventListener('ended', handleEnded);
       
       // Отчищаем ссылку при размонтировании
-      registerGameAudio({ pause: () => {} });
+      registerGameAudio({ pause: () => {}, setVolume: () => {} });
     };
   }, [onEnded, onError]);
 

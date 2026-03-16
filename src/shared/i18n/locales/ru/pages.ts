@@ -37,6 +37,12 @@ export default {
       empty: "Пока пусто. Угадай хотя бы один трек."
     }
   },
+  about: {
+    title: "О проекте",
+    technologies: "Технологии",
+    contacts: "Контакты",
+    backToHome: "На главную",
+  },
   track: {
     title: "Игра",
     inputPlaceholder: "Введите название трека...",

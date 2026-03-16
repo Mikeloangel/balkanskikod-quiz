@@ -1,7 +1,7 @@
 export default {
   home: {
     title: "Balkanski kod",
-    subtitle: "Guess the melody from a short fragment and see how deep you're in the scene.",
+    subtitle: "Guess the melody from a short fragment and test how well you know the hits.",
     description: "A music quiz about Balkan hits. Listen to a fragment and guess the track’s original title.",
     startPlaying: "Start playing",
     shareText: "Try guessing tracks in {{appName}}",
@@ -36,6 +36,12 @@ export default {
       title: "Recently solved",
       empty: "Empty for now. Guess at least one track."
     }
+  },
+  about: {
+    title: "About the project",
+    technologies: "Technologies",
+    contacts: "Contacts",
+    backToHome: "Back to home",
   },
   track: {
     title: "Game",

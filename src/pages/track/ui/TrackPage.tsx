@@ -3,7 +3,7 @@ import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { tracks } from '@/shared/config';
 import type { Track } from '@/shared/models';
-import { checkAnswer, normalizeAnswer } from '../../../shared/lib/text';
+import { checkAnswer, normalizeAnswer, resolveLocalTrackUrl } from '@/shared/lib';
 import { useProgressStore, selectTrackProgress } from '@/entities/progress';
 import { useAudioState, useAudioActions, useUIDialogs, useTrackNavigation, useTrackGameUI, TrackNavigationProvider, TrackGameUIProvider, AudioProvider, useRadio } from '@/shared/contexts';
 import { MetaTags } from '@/shared/ui/MetaTags';
@@ -33,15 +33,6 @@ export const TrackPage = () => {
 
 type TrackPageContentProps = {
   track: Track;
-};
-
-const resolveLocalTrackUrl = (localPath: string): string => {
-  if (/^https?:\/\//i.test(localPath)) {
-    return localPath;
-  }
-
-  const normalizedPath = localPath.replace(/^\/+/, '');
-  return `${import.meta.env.BASE_URL}${normalizedPath}`;
 };
 
 const TrackPageContent = ({ track }: TrackPageContentProps) => {
@@ -101,7 +92,7 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
   const sharePayload = {
     url: `${appBaseUrl}/#/track/${track.id}`,
     title: appName,
-    text: `Попробуй угадать загадку: ${track.names.safe}`,
+    text: t('shareText', { safeName: track.names.safe }),
   };
   const hasWebShare = Boolean(navigator.share);
   const shellVariant = gameUIState.isSolved
@@ -161,8 +152,12 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
   };
 
   const handleManualCopy = async () => {
-    await navigator.clipboard.writeText(sharePayload.url);
-    dialogsActions.setShareFeedback(t('linkCopied'));
+    try {
+      await navigator.clipboard.writeText(sharePayload.url);
+      dialogsActions.setShareFeedback(t('linkCopied'));
+    } catch {
+      dialogsActions.setShareFeedback(t('copyError'));
+    }
   };
 
   const handleOpenShare = () => {
@@ -186,7 +181,7 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
     <>
       <MetaTags 
         title={gameUIState.isSolved || gameUIState.isRevealed ? track.names.original : track.names.safe}
-        description={`Угадай мелодию: ${track.names.safe}. Сложность: ${'★'.repeat(track.difficulty).padEnd(5, '☆')}`}
+        description={t('metaDescription', { safeName: track.names.safe, difficulty: '★'.repeat(track.difficulty).padEnd(5, '☆') })}
         type="music.song"
       />
       <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>

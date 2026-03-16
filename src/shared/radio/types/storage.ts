@@ -2,10 +2,13 @@ import type { RadioStorage } from './radioTrack';
 
 const RADIO_STORAGE_KEY = 'balkanski-kod-radio-state';
 
+const DEFAULT_VOLUME = 0.7;
+
 const getDefaultStorage = (): RadioStorage => ({
   currentTrackId: null,
   playbackStartTime: null,
   totalPlayedTime: 0,
+  volume: DEFAULT_VOLUME,
 });
 
 export const getRadioStorage = (): RadioStorage => {

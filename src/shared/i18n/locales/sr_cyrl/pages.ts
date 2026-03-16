@@ -37,6 +37,12 @@ export default {
       empty: "Тренутно празно. Погоди бар једну песму."
     }
   },
+  about: {
+    title: "О пројекту",
+    technologies: "Технологије",
+    contacts: "Контакти",
+    backToHome: "На почетну",
+  },
   track: {
     title: "Игра",
     inputPlaceholder: "Унеси назив песме...",

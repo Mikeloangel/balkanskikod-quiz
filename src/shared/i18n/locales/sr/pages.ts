@@ -33,9 +33,15 @@ export default {
       resetProgress: "Resetuj napredak"
     },
     lastSolved: {
-      title: "Недавно погођени",
-      empty: "Тренутно празно. Погоди бар једну песму."
+      title: "Nedavno pogođeni",
+      empty: "Trenutno prazno. Pogodi bar jednu pesmu."
     }
+  },
+  about: {
+    title: "O projektu",
+    technologies: "Tehnologije",
+    contacts: "Kontakti",
+    backToHome: "Na početnu",
   },
   track: {
     title: "Igra",

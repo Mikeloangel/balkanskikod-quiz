@@ -29,4 +29,5 @@ export type RadioStorage = {
   currentTrackId: string | null;
   playbackStartTime: number | null;
   totalPlayedTime: number;
+  volume?: number;
 };
