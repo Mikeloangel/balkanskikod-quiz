@@ -1,7 +1,7 @@
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
-import { Button, Chip, Divider, Stack, Typography } from '@mui/material';
+import { Box, Button, Chip, IconButton, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 type ResultCardBlockProps = {
@@ -28,62 +28,109 @@ export const ResultCardBlock = ({
   onOpenShare,
 }: ResultCardBlockProps) => {
   const { t } = useTranslation('tracks');
-  
+
   return (
-  <>
-    <Divider />
+    <Stack spacing={1.5}>
+      {/* Status chip */}
+      <Box sx={{ textAlign: 'center' }}>
+        {isSolved ? (
+          <Chip color="success" label={t('solvedFairly')} />
+        ) : (
+          <Chip color="warning" label={t('revealedByGiveUp')} />
+        )}
+      </Box>
 
-    <Stack spacing={1}>
-      {isSolved ? (
-        <Chip color="success" label={t('solvedFairly')} />
-      ) : (
-        <Chip color="warning" label={t('revealedByGiveUp')} />
-      )}
-
-      <Typography>{t('serbian')}: {serbianTitle}</Typography>
-      <Typography>{t('russian')}: {russianTitle}</Typography>
-      <Typography>{t('original')}: {originalTitle}</Typography>
-
-      <Typography>
-        {t('attempts')}: {attemptsCount} | {t('hintsUsed')}: {hintsUsedCount} | {t('explicitHint')}:{' '}
-        {revealedSerbianTitle ? t('yes') : t('no')}
-      </Typography>
-
-      {sunoUrl ? (
-        <Button
-          component="a"
-          href={sunoUrl}
-          target="_blank"
-          rel="noreferrer"
-          variant="outlined"
-          color="secondary"
-          startIcon={<AutoAwesomeRoundedIcon />}
-          endIcon={<OpenInNewRoundedIcon />}
-          fullWidth
-          sx={{ fontWeight: 700 }}
-        >
-          {t('openInSuno')}
-        </Button>
-      ) : (
-        <Typography color="text.secondary">{t('sunoLinkUnavailable')}</Typography>
-      )}
-
-      <Button
-        startIcon={<ShareRoundedIcon />}
-        size="large"
-        onClick={onOpenShare}
+      {/* Song titles — compact */}
+      <Stack
+        spacing={0.5}
         sx={{
-          mt: 1,
-          fontWeight: 700,
-          background:
-            'linear-gradient(90deg, rgba(110,155,255,1) 0%, rgba(255,124,200,1) 100%)',
-          color: '#0f1115',
+          px: 1.5,
+          py: 1.5,
+          borderRadius: 1.5,
+          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          border: '1px solid',
+          borderColor: 'divider',
+          textAlign: 'center',
         }}
       >
-        {t('sharePuzzle')}
-      </Button>
+        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+          {serbianTitle}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {russianTitle}
+        </Typography>
+        {originalTitle !== russianTitle && (
+          <Typography variant="body2" color="text.secondary">
+            {originalTitle}
+          </Typography>
+        )}
+      </Stack>
+
+      {/* Stats mini-tiles */}
+      <Stack direction="row" spacing={1} justifyContent="center">
+        <StatTile label={t('attempts')} value={attemptsCount} />
+        <StatTile label={t('hintsUsed')} value={hintsUsedCount} />
+        <StatTile
+          label={t('explicitHint')}
+          value={revealedSerbianTitle ? t('yes') : t('no')}
+        />
+      </Stack>
+
+      {/* Action buttons — compact row */}
+      <Stack direction="row" spacing={1} justifyContent="center">
+        {sunoUrl && (
+          <Button
+            component="a"
+            href={sunoUrl}
+            target="_blank"
+            rel="noreferrer"
+            variant="outlined"
+            color="secondary"
+            size="small"
+            startIcon={<AutoAwesomeRoundedIcon sx={{ fontSize: 16 }} />}
+            endIcon={<OpenInNewRoundedIcon sx={{ fontSize: 14 }} />}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
+            Suno
+          </Button>
+        )}
+        <IconButton
+          onClick={onOpenShare}
+          sx={{
+            background: 'linear-gradient(135deg, rgba(110,155,255,0.9), rgba(255,124,200,0.9))',
+            color: '#0f1115',
+            '&:hover': {
+              background: 'linear-gradient(135deg, rgba(110,155,255,1), rgba(255,124,200,1))',
+            },
+          }}
+        >
+          <ShareRoundedIcon sx={{ fontSize: 20 }} />
+        </IconButton>
+      </Stack>
     </Stack>
-  </>
-);
+  );
 };
 
+const StatTile = ({ label, value }: { label: string; value: string | number }) => (
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      px: 1.5,
+      py: 1,
+      borderRadius: 1.5,
+      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+      border: '1px solid',
+      borderColor: 'divider',
+      minWidth: 70,
+    }}
+  >
+    <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+      {value}
+    </Typography>
+    <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2, textAlign: 'center' }}>
+      {label}
+    </Typography>
+  </Box>
+);

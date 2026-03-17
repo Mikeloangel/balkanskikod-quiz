@@ -1,16 +1,21 @@
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import MusicNoteRoundedIcon from '@mui/icons-material/MusicNoteRounded';
+import LightbulbRoundedIcon from '@mui/icons-material/LightbulbRounded';
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded';
 import IconButton from '@mui/material/IconButton';
 import { Box, Stack, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { resolveLocalTrackUrl } from '@/shared/lib/url';
 
 type TrackNavTarget = {
   id: string;
 } | null;
 
 type TrackMetaBlockProps = {
+  trackId: string;
   pageTitle: string;
   showSolvedIcon: boolean;
   difficultyStars: string;
@@ -22,6 +27,7 @@ type TrackMetaBlockProps = {
 };
 
 export const TrackMetaBlock = ({
+  trackId,
   pageTitle,
   showSolvedIcon,
   difficultyStars,
@@ -31,19 +37,13 @@ export const TrackMetaBlock = ({
   revealedSerbianTitle,
   serbianTitle,
 }: TrackMetaBlockProps) => {
-  const { t } = useTranslation('tracks');
-  
+  const [imgError, setImgError] = useState(false);
+  const coverUrl = resolveLocalTrackUrl(`/covers/${trackId}.jpg`);
+
   return (
-  <>
-    <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Typography variant="h5">{pageTitle}</Typography>
-        {showSolvedIcon ? (
-          <CheckCircleRoundedIcon color="success" fontSize="small" />
-        ) : null}
-      </Stack>
-      
-      <Stack direction="row" spacing={1}>
+    <Stack spacing={1.5} alignItems="center">
+      {/* Cover + nav arrows */}
+      <Stack direction="row" alignItems="center" spacing={1}>
         <IconButton
           component={RouterLink}
           to={previousTrack ? `/track/${previousTrack.id}` : '#'}
@@ -53,6 +53,41 @@ export const TrackMetaBlock = ({
         >
           <NavigateBeforeRoundedIcon />
         </IconButton>
+
+        <Box
+          sx={{
+            width: { xs: 140, sm: 180 },
+            height: { xs: 140, sm: 180 },
+            borderRadius: 3,
+            overflow: 'hidden',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            flexShrink: 0,
+          }}
+        >
+          {!imgError ? (
+            <Box
+              component="img"
+              src={coverUrl}
+              alt={pageTitle}
+              onError={() => setImgError(true)}
+              sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, rgba(110, 155, 255, 0.15), rgba(255, 124, 200, 0.15))',
+              }}
+            >
+              <MusicNoteRoundedIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+            </Box>
+          )}
+        </Box>
+
         <IconButton
           component={RouterLink}
           to={nextTrack ? `/track/${nextTrack.id}` : '#'}
@@ -63,27 +98,67 @@ export const TrackMetaBlock = ({
           <NavigateNextRoundedIcon />
         </IconButton>
       </Stack>
-    </Stack>
 
-    <Typography color="text.secondary">{t('difficulty')}: {difficultyStars}</Typography>
-
-    {openedHints.length > 0 ? (
-      <Box>
-        <Typography color="text.secondary" mb={0.5}>
-          {t('openedHints')}
+      {/* Title + difficulty */}
+      <Stack alignItems="center" sx={{ minWidth: 0 }}>
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              textAlign: 'center',
+              lineHeight: 1.3,
+            }}
+          >
+            {pageTitle}
+          </Typography>
+          {showSolvedIcon && (
+            <CheckCircleRoundedIcon color="success" sx={{ fontSize: 20 }} />
+          )}
+        </Stack>
+        <Typography
+          variant="caption"
+          sx={{ color: 'warning.main', letterSpacing: 1 }}
+        >
+          {difficultyStars}
         </Typography>
-        <Stack spacing={0.5}>
-          {openedHints.map((hint) => (
-            <Typography key={hint}>- {hint}</Typography>
+      </Stack>
+
+      {/* Hints */}
+      {openedHints.length > 0 && (
+        <Stack spacing={0.75} sx={{ width: '100%' }}>
+          {openedHints.map((hint, i) => (
+            <Stack
+              key={i}
+              direction="row"
+              spacing={1}
+              sx={{
+                px: 1,
+                py: 0.75,
+              }}
+            >
+              <LightbulbRoundedIcon sx={{ fontSize: 16, color: 'warning.main', mt: 0.25, flexShrink: 0 }} />
+              <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4 }}>
+                {hint}
+              </Typography>
+            </Stack>
           ))}
         </Stack>
-      </Box>
-    ) : null}
+      )}
 
-    {revealedSerbianTitle ? (
-      <Typography color="text.secondary">{t('explicitHintRevealed')} {serbianTitle}</Typography>
-    ) : null}
-  </>
-);
+      {/* Revealed serbian title */}
+      {revealedSerbianTitle && (
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ px: 1, py: 0.75, width: '100%' }}
+        >
+          <TranslateRoundedIcon sx={{ fontSize: 16, color: 'warning.main', mt: 0.25, flexShrink: 0 }} />
+          <Typography variant="body2" sx={{ color: 'warning.main', lineHeight: 1.4 }}>
+            {serbianTitle}
+          </Typography>
+        </Stack>
+      )}
+    </Stack>
+  );
 };
-

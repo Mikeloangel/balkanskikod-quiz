@@ -1,4 +1,4 @@
-import { Chip, Paper, Stack, Typography } from '@mui/material';
+import { Chip, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { Track } from '@/shared/models';
 import { checkAnswer, getPartialMatches } from '@/shared/lib/text';
@@ -15,63 +15,66 @@ export const AttemptsHistoryBlock = ({
   track,
 }: AttemptsHistoryBlockProps) => {
   const { t } = useTranslation('tracks');
-  
+
   if (attemptsForView.length === 0) {
     return null;
   }
 
   return (
-    <Stack spacing={1}>
+    <Stack spacing={0.75}>
       {attemptsForView.map((attempt, index) => {
         const attemptResult = checkAnswer(attempt, track);
         const partial = getPartialMatches(attempt, track);
         const attemptNumber = attemptsCount - index;
 
         return (
-          <Paper
+          <Stack
             key={`${attempt}-${attemptNumber}`}
-            variant="outlined"
-            sx={{ p: 1.5 }}
+            sx={{
+              px: 1.5,
+              py: 0.75,
+              borderRadius: 1.5,
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
           >
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={1}
-              alignItems={{ xs: 'flex-start', sm: 'center' }}
-              justifyContent="space-between"
-            >
-              <Stack spacing={0.5}>
-                <Typography variant="caption" color="text.secondary">
-                  {t('attempt')} #{attemptNumber}
-                </Typography>
-                <Typography fontWeight={600}>{attempt}</Typography>
-              </Stack>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="caption" color="text.secondary" sx={{ minWidth: 20 }}>
+                #{attemptNumber}
+              </Typography>
+
+              <Typography variant="body2" sx={{ fontWeight: 500, flex: 1, minWidth: 0 }} noWrap>
+                {attempt}
+              </Typography>
 
               {attemptResult.isCorrect ? (
-                <Chip color="success" label={t('guessed')} size="small" />
+                <Chip color="success" label={t('guessed')} size="small" sx={{ height: 22, fontSize: '0.7rem' }} />
               ) : partial.hasPartialMatch ? (
                 <Chip
                   color="info"
-                  label={`${t('partially')}: ${Math.round(partial.ratio * 100)}%`}
+                  label={`${Math.round(partial.ratio * 100)}%`}
                   size="small"
+                  sx={{ height: 22, fontSize: '0.7rem' }}
                 />
               ) : (
                 <Chip
                   color="default"
-                  label={`${t('missed')}: ${Math.round(attemptResult.similarity * 100)}%`}
+                  label={`${Math.round(attemptResult.similarity * 100)}%`}
                   size="small"
+                  sx={{ height: 22, fontSize: '0.7rem' }}
                 />
               )}
             </Stack>
 
-            {!attemptResult.isCorrect && partial.hasPartialMatch ? (
-              <Typography mt={1} variant="body2" color="text.secondary">
+            {!attemptResult.isCorrect && partial.hasPartialMatch && (
+              <Typography variant="caption" color="info.main" sx={{ mt: 0.25, pl: 3.5 }}>
                 {t('matchedWords')} {partial.matchedWords.join(', ')}
               </Typography>
-            ) : null}
-          </Paper>
+            )}
+          </Stack>
         );
       })}
     </Stack>
   );
 };
-

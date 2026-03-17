@@ -184,13 +184,14 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
         description={t('metaDescription', { safeName: track.names.safe, difficulty: '★'.repeat(track.difficulty).padEnd(5, '☆') })}
         type="music.song"
       />
-      <Container maxWidth="md" sx={{ py: 4, pb: 18 }}>
+      <Container maxWidth="md" sx={{ py: 4, pb: 10 }}>
             <Stack spacing={2.5}>
               <TrackPageHeader pageTitle={gameUIState.pageTitle} />
 
               <TrackResultShell variant={shellVariant} animate={audioState.isPlaying}>
                 <Stack spacing={2}>
                   <TrackMetaBlock
+                    trackId={track.id}
                     pageTitle={gameUIState.pageTitle}
                     showSolvedIcon={gameUIState.isSolved}
                     difficultyStars={gameUIState.difficultyStars}
