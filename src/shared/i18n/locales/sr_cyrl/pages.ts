@@ -26,7 +26,10 @@ export default {
       difficulty: "Тежина",
       attempts: "Покушаја",
       status: "Статус",
-      new: "Ново"
+      new: "Ново",
+      filterAll: "Све",
+      filterSolved: "Погођене",
+      filterUnsolved: "Непогођене"
     },
     footer: {
       aboutProject: "О пројекту",

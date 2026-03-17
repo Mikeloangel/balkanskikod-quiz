@@ -1,16 +1,41 @@
+import { useState } from 'react';
 import { Box, useMediaQuery } from '@mui/material';
 import { MusicNote } from '@mui/icons-material';
 import { useRadio } from '@/shared/contexts';
-import { useCoverArt } from '@/shared/lib/useCoverArt';
+import { resolveLocalTrackUrl } from '@/shared/lib/url';
 
 interface CoverArtProps {
   size?: number;
 }
 
+const CoverImage = ({ src, size }: { src: string; size: number }) => {
+  const [error, setError] = useState(false);
+
+  if (error) {
+    return <MusicNote sx={{ color: 'text.secondary', fontSize: size * 0.5 }} />;
+  }
+
+  return (
+    <Box
+      component="img"
+      src={src}
+      alt="Cover"
+      onError={() => setError(true)}
+      sx={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+      }}
+    />
+  );
+};
+
 export const CoverArt: React.FC<CoverArtProps> = ({ size = 48 }) => {
   const isNarrow = useMediaQuery('(max-width:440px)');
   const { currentTrack } = useRadio();
-  const coverUrl = useCoverArt(currentTrack?.links.local ?? null);
+  const coverUrl = currentTrack
+    ? resolveLocalTrackUrl(`/covers/${currentTrack.id}.jpg`)
+    : null;
 
   if (isNarrow) return null;
 
@@ -29,16 +54,7 @@ export const CoverArt: React.FC<CoverArtProps> = ({ size = 48 }) => {
       }}
     >
       {coverUrl ? (
-        <Box
-          component="img"
-          src={coverUrl}
-          alt="Cover"
-          sx={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
-        />
+        <CoverImage key={coverUrl} src={coverUrl} size={size} />
       ) : (
         <MusicNote sx={{ color: 'text.secondary', fontSize: size * 0.5 }} />
       )}

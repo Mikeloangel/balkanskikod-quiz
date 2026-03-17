@@ -85,7 +85,7 @@ export const HomePage = () => {
         title={tMeta('title')}
         description={tMeta('description')}
       />
-      <Container maxWidth="lg" sx={{ py: 4, pb: 18 }}>
+      <Container maxWidth="lg" sx={{ py: 4, pb: 10 }}>
         <Stack spacing={3}>
           <HeaderBlock
             title={appName}

@@ -26,7 +26,10 @@ export default {
       difficulty: "Difficulty",
       attempts: "Attempts",
       status: "Status",
-      new: "New"
+      new: "New",
+      filterAll: "All",
+      filterSolved: "Solved",
+      filterUnsolved: "Unsolved"
     },
     footer: {
       aboutProject: "About project",

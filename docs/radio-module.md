@@ -242,41 +242,31 @@ useEffect(() => {
 ```tsx
 <RadioWidget>
   <PlayControls />      // Play/Pause кнопка
-  <TrackInfo />         // Информация о треке + кнопка SUNO
-  <VolumeControl />     // Регулятор громкости
+  <TrackInfo />         // Название трека (оригинал + перевод)
+  <VolumeControl />     // Регулятор громкости (скрыт на iOS)
+  <SunoButton />        // Ссылка на оригинал в Suno
+  <CoverArt />          // Обложка трека
   <ProgressBar />       // Визуальный прогресс без перемотки
 </RadioWidget>
 ```
 
+### CoverArt
+- Обложка из статического файла `public/covers/{track-id}.jpg`
+- URL формируется через `resolveLocalTrackUrl`
+- Fallback: иконка ноты при ошибке загрузки
+- Скрывается на узких экранах (< 440px)
+- При смене трека используется `key={coverUrl}` для сброса состояния ошибки
+
 ### Адаптивность
 - **Десктоп**: 1 строка, все элементы горизонтально
-- **Мобильные**: 2 строки, элементы сгруппированы
+- **Мобильные (< 440px)**: обложка скрыта
 
 ### VolumeControl особенности
-```tsx
-const handleVolumeUp = () => {
-  const newVolume = Math.min(1, volume + 0.1);
-  setVolume(newVolume);
-};
-
-const handleVolumeDown = () => {
-  const newVolume = Math.max(0, volume - 0.1);
-  setVolume(newVolume);
-};
-
-const handleMuteToggle = () => {
-  if (volume > 0) {
-    setPreviousVolume(volume);
-    setVolume(0);
-  } else {
-    setVolume(previousVolume || 0.7);
-  }
-};
-```
-
-- Умные кнопки +10% / -10%
-- Mute/Unmute с запоминанием предыдущей громкости
-- Визуальная индикация уровня громкости
+- Одна кнопка-иконка (VolumeOff / VolumeDown / VolumeUp по уровню)
+- Клик открывает вертикальный Slider в Popover
+- Двойной клик — toggle mute (запоминает предыдущую громкость)
+- **iOS**: компонент полностью скрыт (`return null`), т.к. iOS Safari игнорирует `HTMLAudioElement.volume`
+- Определение iOS: `userAgent` + `maxTouchPoints > 1` (ловит iPad на iPadOS)
 
 ## Обработка ошибок
 

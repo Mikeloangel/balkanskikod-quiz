@@ -3,11 +3,20 @@ import { VolumeDown, VolumeUp, VolumeOff } from '@mui/icons-material';
 import { useRadio } from '@/shared/contexts';
 import { useState, useRef } from 'react';
 
+/**
+ * iOS Safari ignores HTMLAudioElement.volume — volume is hardware-only.
+ * We detect iOS once and hide the control entirely.
+ */
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
 export const VolumeControl: React.FC = () => {
   const { state, setVolume } = useRadio();
   const [previousVolume, setPreviousVolume] = useState(state.volume || 0.7);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  if (isIOS) return null;
 
   const handleVolumeChange = (_: Event, newValue: number | number[]) => {
     const newVolume = newValue as number;

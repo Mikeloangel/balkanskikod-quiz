@@ -1,18 +1,12 @@
-import { getTrackProgressSafe, isTrackNew } from '@/entities/progress';
-import type { StorageSchema, TrackProgressStatus } from '@/entities/progress';
+import { useState, useMemo } from 'react';
+import { getTrackProgressSafe } from '@/entities/progress';
+import type { StorageSchema } from '@/entities/progress';
 import type { Track } from '@/shared/models';
-import { Paper, Typography, Stack, Box, Chip, IconButton, Tooltip } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded';
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import PendingRoundedIcon from '@mui/icons-material/PendingRounded';
-import NotStartedRoundedIcon from '@mui/icons-material/NotStartedRounded';
+import { Box, Typography, ToggleButtonGroup, ToggleButton, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { TrackCard } from './TrackCard';
 
-const getDifficultyStars = (difficulty: number): string =>
-  '★'.repeat(difficulty).padEnd(5, '☆');
+type TrackFilter = 'all' | 'solved' | 'unsolved';
 
 type TracksListBlockProps = {
   tracks: Track[];
@@ -21,117 +15,95 @@ type TracksListBlockProps = {
 
 export const TracksListBlock = ({ tracks, storage }: TracksListBlockProps) => {
   const { t: tPages } = useTranslation('pages');
-  const { t: tCommon } = useTranslation('common');
-  
-  const statusLabelMap = {
-    not_started: tCommon('trackStatus.notStarted'),
-    in_progress: tCommon('trackStatus.inProgress'),
-    solved: tCommon('trackStatus.solved'),
-    revealed: tCommon('trackStatus.revealed'),
-  } as const;
+  const [filter, setFilter] = useState<TrackFilter>('all');
+
+  const filteredTracks = useMemo(() => {
+    if (filter === 'all') return tracks;
+
+    return tracks.filter((track) => {
+      const progress = getTrackProgressSafe(storage, track.id);
+      const status = progress?.status ?? 'not_started';
+      const isSolved = status === 'solved' || status === 'revealed';
+      return filter === 'solved' ? isSolved : !isSolved;
+    });
+  }, [tracks, storage, filter]);
+
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" mb={2}>
-        {tPages('home.tracks.title')}
-      </Typography>
+    <Box>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        flexWrap="wrap"
+        gap={1}
+        mb={2}
+      >
+        <Typography variant="h6">
+          {tPages('home.tracks.title')}
+        </Typography>
 
-      <Stack spacing={1.5}>
-        {tracks.map((track) => {
-          const progress = getTrackProgressSafe(storage, track.id);
-          const status: TrackProgressStatus = progress?.status ?? 'not_started';
-          const attempts = progress?.attemptsCount ?? 0;
-          const showNew = isTrackNew(track, progress);
-          const hasUserProgress =
-            status !== 'not_started' ||
-            attempts > 0 ||
-            (progress?.hintsUsedCount ?? 0) > 0 ||
-            Boolean(progress?.revealedSerbianTitle) ||
-            Boolean(progress?.revealedByGiveUp);
-
-          return (
-            <Paper key={track.id} variant="outlined" sx={{ p: 2 }}>
-              <Stack
-                direction={{ xs: 'column', md: 'row' }}
-                justifyContent="space-between"
-                alignItems={{ xs: 'flex-start', md: 'center' }}
-                spacing={1}
-              >
-                <Box>
-                  <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                    useFlexGap
-                    flexWrap="wrap"
-                  >
-                    {showNew ? (
-                      <Tooltip title={tPages('home.tracks.new')}>
-                        <Chip size="small" color="primary" icon={<NewReleasesRoundedIcon sx={{ fontSize: 16 }} />} />
-                      </Tooltip>
-                    ) : null}
-                    {hasUserProgress ? (
-                      <Tooltip title={statusLabelMap[status]}>
-                        <Chip
-                          size="small"
-                          icon={
-                            status === 'solved'
-                              ? <CheckCircleRoundedIcon sx={{ fontSize: 16 }} />
-                              : status === 'revealed'
-                                ? <VisibilityRoundedIcon sx={{ fontSize: 16 }} />
-                                : status === 'in_progress'
-                                  ? <PendingRoundedIcon sx={{ fontSize: 16 }} />
-                                  : <NotStartedRoundedIcon sx={{ fontSize: 16 }} />
-                          }
-                          color={
-                            status === 'solved'
-                              ? 'success'
-                              : status === 'revealed'
-                                ? 'warning'
-                                : status === 'in_progress'
-                                  ? 'info'
-                                  : 'default'
-                          }
-                        />
-                      </Tooltip>
-                    ) : null}
-                    <Typography
-                      variant="h6"
-                      component={RouterLink}
-                      to={`/track/${track.id}`}
-                      sx={{
-                        textDecoration: 'none',
-                        color: 'inherit',
-                        '&:hover': {
-                          textDecoration: 'underline',
-                          color: 'primary.main'
-                        }
-                      }}
-                    >
-                      {status === 'solved' || status === 'revealed' ? (
-                        <>
-                          {track.names.original} <span style={{ fontSize: '12px', fontWeight: 300 }}>{track.names.serbian}</span>
-                        </>
-                      ) : (
-                        track.names.safe
-                      )}
-                    </Typography>
-                  </Stack>
-                  <Typography color="text.secondary">
-                    {!hasUserProgress ? `${tPages('home.tracks.status')}: ${statusLabelMap[status]} | ` : ''}
-                    {tPages('home.tracks.difficulty')}:{' '}
-                    {getDifficultyStars(track.difficulty)}
-                    {attempts > 0 ? ` | ${tPages('home.tracks.attempts')}: ${attempts}` : ''}
-                  </Typography>
-                </Box>
-
-                <IconButton component={RouterLink} to={`/track/${track.id}`}>
-                  <ArrowForwardRoundedIcon />
-                </IconButton>
-              </Stack>
-            </Paper>
-          );
-        })}
+        <ToggleButtonGroup
+          value={filter}
+          exclusive
+          onChange={(_, value: TrackFilter | null) => {
+            if (value) setFilter(value);
+          }}
+          size="small"
+          sx={{
+            '& .MuiToggleButton-root': {
+              px: { xs: 1, sm: 1.5 },
+              py: 0.5,
+              fontSize: { xs: '0.7rem', sm: '0.8rem' },
+              textTransform: 'none',
+              borderColor: 'divider',
+              '&.Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+              },
+            },
+          }}
+        >
+          <ToggleButton value="all">
+            {tPages('home.tracks.filterAll')}
+          </ToggleButton>
+          <ToggleButton value="solved">
+            {tPages('home.tracks.filterSolved')}
+          </ToggleButton>
+          <ToggleButton value="unsolved">
+            {tPages('home.tracks.filterUnsolved')}
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Stack>
-    </Paper>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: 'repeat(2, 1fr)',
+            sm: 'repeat(3, 1fr)',
+            md: 'repeat(4, 1fr)',
+          },
+          gap: 2,
+        }}
+      >
+        {filteredTracks.map((track) => (
+          <TrackCard key={track.id} track={track} storage={storage} />
+        ))}
+      </Box>
+
+      {filteredTracks.length === 0 && (
+        <Typography
+          color="text.secondary"
+          sx={{ textAlign: 'center', py: 4 }}
+        >
+          {filter === 'solved'
+            ? tPages('home.lastSolved.empty')
+            : '—'}
+        </Typography>
+      )}
+    </Box>
   );
 };

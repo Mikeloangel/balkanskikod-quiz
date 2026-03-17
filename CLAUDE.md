@@ -17,13 +17,14 @@ Feature-Sliced Design (FSD): `shared → entities → widgets → pages → app`
 ## Ключевые команды
 
 ```bash
-npm run dev          # Dev server :5173
-npm run build        # Production build (tsc + vite)
-npm run lint         # ESLint
-npm run lint:fsd     # FSD architecture check
-npm test             # Vitest (122 теста)
+npm run dev            # Dev server :5173
+npm run build          # Production build (tests + lint + extract-covers + tsc + vite)
+npm run lint           # ESLint
+npm run lint:fsd       # FSD architecture check
+npm run extract-covers # Извлечь обложки из MP3 ID3 тегов → public/covers/
+npm test               # Vitest
 npm run test:coverage
-npm run deploy       # GitHub Pages (gh-pages)
+npm run deploy         # GitHub Pages (gh-pages)
 ```
 
 ## Перед завершением задачи
@@ -64,13 +65,20 @@ npm run deploy       # GitHub Pages (gh-pages)
 - Fallback: русский
 
 ### Страницы
-- `/` — HomePage (список треков, статистика, share)
+- `/` — HomePage (сетка карточек треков с обложками, плитки статистики, лента недавно угаданных, фильтр треков)
 - `/track/:id` — TrackPage (игра: аудио, ввод ответа, подсказки)
 - `/about` — AboutPage (о проекте, динамический контент по языку)
+
+### Обложки треков
+- `public/covers/` — статические обложки (извлекаются из MP3 ID3 тегов)
+- `cli/extract-covers.mjs` — Node.js скрипт извлечения (встроен в `npm run build`)
+- Формат: `public/covers/{track-id}.jpg`
+- Fallback: градиентный placeholder если обложки нет
 
 ### Контент
 - `src/content/about/` — контент страницы "О проекте" на 4 языках
 - `cli/wizard.php` — CLI для генерации треков через OpenAI
+- `cli/extract-covers.mjs` — CLI для извлечения обложек из MP3
 
 ## Документация
 

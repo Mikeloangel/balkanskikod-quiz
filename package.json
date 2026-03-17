@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "npm run test && npm run lint && npm run lint:fsd && tsc -b && vite build",
+    "extract-covers": "node cli/extract-covers.mjs",
+    "build": "npm run test && npm run lint && npm run lint:fsd && npm run extract-covers && tsc -b && vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
