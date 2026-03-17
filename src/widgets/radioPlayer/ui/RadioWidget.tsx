@@ -25,13 +25,15 @@ export const RadioWidget: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        height: WIDGET_HEIGHT + PROGRESS_HEIGHT,
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
         backgroundColor: 'rgba(25, 25, 25, 0.95)',
         backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         borderTop: '1px solid rgba(255, 255, 255, 0.1)',
         zIndex: 1000,
+        transform: 'translateZ(0)', // Force GPU layer to prevent iOS scroll gap
       }}
     >
       {state.error && (
