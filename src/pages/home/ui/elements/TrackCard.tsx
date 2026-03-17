@@ -59,7 +59,13 @@ export const TrackCard = ({ track, storage }: TrackCardProps) => {
     Boolean(progress?.revealedSerbianTitle) ||
     Boolean(progress?.revealedByGiveUp);
 
-  const statusLabel = tCommon(`trackStatus.${status}`);
+  const statusI18nKey: Record<string, string> = {
+    not_started: 'notStarted',
+    in_progress: 'inProgress',
+    solved: 'solved',
+    revealed: 'revealed',
+  };
+  const statusLabel = tCommon(`trackStatus.${statusI18nKey[status] ?? status}`);
 
   const trackName =
     status === 'solved' || status === 'revealed'

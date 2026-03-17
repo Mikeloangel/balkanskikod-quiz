@@ -136,10 +136,11 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
   const play = useCallback(() => {
     if (!audioRef.current || !currentTrack) return;
 
-    // Check limit before playing
+    // User pressed play — reset timer (30 min is "are you still there?", not a hard cap)
     if (totalPlayedTimeRef.current >= MAX_PLAY_TIME_MS) {
-      stopDueToLimit();
-      return;
+      totalPlayedTimeRef.current = 0;
+      setState(prev => ({ ...prev, totalPlayedTime: 0, error: null }));
+      setRadioStorage({ totalPlayedTime: 0 });
     }
 
     // Восстанавливаем позицию воспроизведения
@@ -182,7 +183,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
           }));
         });
     }
-  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, stopDueToLimit, state.totalPlayedTime, state.playbackStartTime, state.currentTime, onPlay]);
+  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, state.totalPlayedTime, state.playbackStartTime, state.currentTime, onPlay]);
 
   const pause = useCallback(() => {
     if (!audioRef.current) return;
