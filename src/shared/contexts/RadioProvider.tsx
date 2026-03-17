@@ -43,8 +43,14 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
   const maxPlayTimeoutRef = useRef<number | null>(null);
+  // Ref to always have fresh totalPlayedTime in closures
+  const totalPlayedTimeRef = useRef(0);
 
-  const currentTrack = state.currentTrackId 
+  useEffect(() => {
+    totalPlayedTimeRef.current = state.totalPlayedTime;
+  }, [state.totalPlayedTime]);
+
+  const currentTrack = state.currentTrackId
     ? radioTracks.find(track => track.id === state.currentTrackId) || null
     : null;
 
@@ -62,31 +68,54 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
     }
   }, []);
 
-  const updateProgress = useCallback(() => {
-    if (audioRef.current && state.isPlaying) {
-      const currentTime = audioRef.current.currentTime;
-      const duration = audioRef.current.duration || 0;
-      
-      setState(prev => ({
-        ...prev,
-        currentTime,
-        duration,
-        totalPlayedTime: prev.totalPlayedTime + 1000, // +1000мс, т.к. updateProgress вызывается каждую секунду
-      }));
-
-      setState(prev => {
-        const currentTotalPlayedTime = prev.totalPlayedTime;
-        if (currentTotalPlayedTime >= MAX_PLAY_TIME_MS) {
-          return {
-            ...prev,
-            isPlaying: false,
-            error: i18n.t('errorMaxPlayTime', { ns: 'radio' }),
-          };
-        }
-        return prev;
-      });
+  /** Stop playback due to max time limit */
+  const stopDueToLimit = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
-  }, [state.isPlaying]);
+    clearProgressInterval();
+    clearMaxPlayTimeout();
+    setState(prev => ({
+      ...prev,
+      isPlaying: false,
+      error: i18n.t('errorMaxPlayTime', { ns: 'radio' }),
+    }));
+  }, [clearProgressInterval, clearMaxPlayTimeout]);
+
+  const updateProgress = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    setState(prev => {
+      if (!prev.isPlaying) return prev;
+
+      const newTotalPlayed = prev.totalPlayedTime + 1000;
+
+      // Persist every 5 seconds
+      if (newTotalPlayed % 5000 < 1000) {
+        setRadioStorage({ totalPlayedTime: newTotalPlayed });
+      }
+
+      if (newTotalPlayed >= MAX_PLAY_TIME_MS) {
+        audio.pause();
+        clearProgressInterval();
+        clearMaxPlayTimeout();
+        return {
+          ...prev,
+          isPlaying: false,
+          totalPlayedTime: newTotalPlayed,
+          error: i18n.t('errorMaxPlayTime', { ns: 'radio' }),
+        };
+      }
+
+      return {
+        ...prev,
+        currentTime: audio.currentTime,
+        duration: audio.duration || 0,
+        totalPlayedTime: newTotalPlayed,
+      };
+    });
+  }, [clearProgressInterval, clearMaxPlayTimeout]);
 
   const startProgressTracking = useCallback(() => {
     clearProgressInterval();
@@ -95,27 +124,29 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
 
   const setupMaxPlayTimeout = useCallback(() => {
     clearMaxPlayTimeout();
-    const remainingTime = MAX_PLAY_TIME_MS - state.totalPlayedTime;
-    
+    const remainingTime = MAX_PLAY_TIME_MS - totalPlayedTimeRef.current;
+
     if (remainingTime > 0) {
       maxPlayTimeoutRef.current = setTimeout(() => {
-        setState(prev => ({
-          ...prev,
-          isPlaying: false,
-          error: i18n.t('errorMaxPlayTime', { ns: 'radio' }),
-        }));
+        stopDueToLimit();
       }, remainingTime);
     }
-  }, [clearMaxPlayTimeout, state.totalPlayedTime]);
+  }, [clearMaxPlayTimeout, stopDueToLimit]);
 
   const play = useCallback(() => {
     if (!audioRef.current || !currentTrack) return;
+
+    // Check limit before playing
+    if (totalPlayedTimeRef.current >= MAX_PLAY_TIME_MS) {
+      stopDueToLimit();
+      return;
+    }
 
     // Восстанавливаем позицию воспроизведения
     audioRef.current.currentTime = state.currentTime;
 
     const playPromise = audioRef.current.play();
-    
+
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
@@ -123,28 +154,25 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
           setState(prev => ({
             ...prev,
             isPlaying: true,
-            // Устанавливаем playbackStartTime только если не было паузы (т.е. трек начинается сначала)
             playbackStartTime: prev.playbackStartTime === null ? now : prev.playbackStartTime,
             error: null,
           }));
-          
+
           setRadioStorage({
-      currentTrackId: currentTrack.id,
-      // Сохраняем текущий playbackStartTime
-      playbackStartTime: state.playbackStartTime === null ? now : state.playbackStartTime,
-      totalPlayedTime: state.totalPlayedTime,
-    });
-          
+            currentTrackId: currentTrack.id,
+            playbackStartTime: state.playbackStartTime === null ? now : state.playbackStartTime,
+            totalPlayedTime: state.totalPlayedTime,
+          });
+
           startProgressTracking();
           setupMaxPlayTimeout();
-          
+
           // Ставим на паузу игровой плеер через глобальный ref
           const gameAudio = getGameAudioRef();
           if (gameAudio) {
             gameAudio.pause();
           }
-          
-          // Вызываем callback для паузы игрового плеера
+
           onPlay?.();
         })
         .catch(() => {
@@ -154,14 +182,14 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
           }));
         });
     }
-  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, state.totalPlayedTime, state.playbackStartTime, state.currentTime, onPlay]);
+  }, [currentTrack, startProgressTracking, setupMaxPlayTimeout, stopDueToLimit, state.totalPlayedTime, state.playbackStartTime, state.currentTime, onPlay]);
 
   const pause = useCallback(() => {
     if (!audioRef.current) return;
 
     audioRef.current.pause();
-    
-    const playedTime = state.playbackStartTime 
+
+    const playedTime = state.playbackStartTime
       ? state.totalPlayedTime + (Date.now() - state.playbackStartTime)
       : state.totalPlayedTime;
 
@@ -194,54 +222,57 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       gameAudio.setVolume(clampedVolume);
     }
 
-    // Сохраняем в localStorage
     setRadioStorage({ volume: clampedVolume });
   }, []);
 
   const nextTrack = useCallback(() => {
-    // Берем случайный трек, отличный от текущего
     const availableTracks = radioTracks.filter(track => track.id !== state.currentTrackId);
     const randomIndex = Math.floor(Math.random() * availableTracks.length);
-    const nextTrack = availableTracks[randomIndex];
-    
-    if (!nextTrack) return;
+    const next = availableTracks[randomIndex];
+
+    if (!next) return;
 
     setState(prev => ({
       ...prev,
-      currentTrackId: nextTrack.id,
+      currentTrackId: next.id,
       currentTime: 0,
       duration: 0,
     }));
 
     setRadioStorage({
-      currentTrackId: nextTrack.id,
+      currentTrackId: next.id,
       playbackStartTime: null,
-      totalPlayedTime: state.totalPlayedTime,
+      totalPlayedTime: totalPlayedTimeRef.current,
     });
-  }, [state.currentTrackId, state.totalPlayedTime]);
+  }, [state.currentTrackId]);
 
   const nextTrackAndPlay = useCallback(() => {
-    // Берем случайный трек, отличный от текущего
+    // Check limit before auto-playing next track
+    if (totalPlayedTimeRef.current >= MAX_PLAY_TIME_MS) {
+      stopDueToLimit();
+      return;
+    }
+
     const availableTracks = radioTracks.filter(track => track.id !== state.currentTrackId);
     const randomIndex = Math.floor(Math.random() * availableTracks.length);
-    const nextTrack = availableTracks[randomIndex];
-    
-    if (!nextTrack) return;
+    const next = availableTracks[randomIndex];
+
+    if (!next) return;
 
     setState(prev => ({
       ...prev,
-      currentTrackId: nextTrack.id,
+      currentTrackId: next.id,
       currentTime: 0,
       duration: 0,
-      isPlaying: true, // Устанавливаем флаг воспроизведения
+      isPlaying: true,
     }));
 
     setRadioStorage({
-      currentTrackId: nextTrack.id,
+      currentTrackId: next.id,
       playbackStartTime: null,
-      totalPlayedTime: state.totalPlayedTime,
+      totalPlayedTime: totalPlayedTimeRef.current,
     });
-  }, [state.currentTrackId, state.totalPlayedTime]);
+  }, [state.currentTrackId, stopDueToLimit]);
 
   const openTrackInSuno = useCallback(() => {
     if (currentTrack?.links.suno) {
@@ -255,10 +286,9 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
 
   useEffect(() => {
     const storage = getRadioStorage();
-    
+
     let trackId = storage.currentTrackId;
     if (!trackId || !radioTracks.find(track => track.id === trackId)) {
-      // Если нет сохраненного трека или он не найден, берем случайный
       const randomIndex = Math.floor(Math.random() * radioTracks.length);
       trackId = radioTracks[randomIndex]?.id || null;
     }
@@ -278,7 +308,6 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
   useEffect(() => {
     if (!currentTrack) return;
 
-    // Если трек тот же самый, не пересоздаем audio
     if (audioRef.current && audioRef.current.src === resolveLocalTrackUrl(currentTrack.links.local)) {
       return;
     }
@@ -290,16 +319,12 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
 
     const audio = new Audio();
     audio.src = resolveLocalTrackUrl(currentTrack.links.local);
-    // Громкость установится в отдельном useEffect
     audioRef.current = audio;
 
     const handleEnded = () => {
-      // Проверяем лимит времени перед запуском следующего трека
-      if (state.totalPlayedTime >= MAX_PLAY_TIME_MS) {
-        setState(prev => ({
-          ...prev,
-          isPlaying: false,
-        }));
+      // Use ref for fresh value
+      if (totalPlayedTimeRef.current >= MAX_PLAY_TIME_MS) {
+        stopDueToLimit();
         return;
       }
       nextTrackAndPlay();
@@ -310,29 +335,28 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
         ...prev,
         error: i18n.t('errorLoadFailed', { ns: 'radio' }),
       }));
-      // Проверяем лимит времени перед запуском следующего трека
-      if (state.totalPlayedTime >= MAX_PLAY_TIME_MS) {
+      if (totalPlayedTimeRef.current >= MAX_PLAY_TIME_MS) {
         return;
       }
       setTimeout(nextTrack, 2000);
     };
 
     const handleLoadedMetadata = () => {
-      const audio = audioRef.current;
-      if (audio && audio.duration) {
+      const a = audioRef.current;
+      if (a && a.duration) {
         setState(prev => ({
           ...prev,
-          duration: audio.duration,
+          duration: a.duration,
         }));
       }
     };
 
     const handleTimeUpdate = () => {
-      const audio = audioRef.current;
-      if (audio) {
+      const a = audioRef.current;
+      if (a) {
         setState(prev => ({
           ...prev,
-          currentTime: audio.currentTime,
+          currentTime: a.currentTime,
         }));
       }
     };
@@ -350,7 +374,7 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
       audio.pause();
       audio.src = '';
     };
-  }, [currentTrack, nextTrack, nextTrackAndPlay, state.totalPlayedTime]);
+  }, [currentTrack, nextTrack, nextTrackAndPlay, stopDueToLimit]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -360,7 +384,6 @@ export const RadioProvider: React.FC<RadioProviderProps> = ({ children, onPlay }
 
   useEffect(() => {
     if (audioRef.current && state.isPlaying && currentTrack) {
-      // Автоматически запускаем воспроизведение если isPlaying=true
       audioRef.current.play().catch(() => {
         setState(prev => ({
           ...prev,
