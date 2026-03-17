@@ -1,14 +1,10 @@
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
-import { Box, Button, Chip, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 type ResultCardBlockProps = {
-  isSolved: boolean;
-  serbianTitle: string;
-  russianTitle: string;
-  originalTitle: string;
   attemptsCount: number;
   hintsUsedCount: number;
   revealedSerbianTitle: boolean;
@@ -17,10 +13,6 @@ type ResultCardBlockProps = {
 };
 
 export const ResultCardBlock = ({
-  isSolved,
-  serbianTitle,
-  russianTitle,
-  originalTitle,
   attemptsCount,
   hintsUsedCount,
   revealedSerbianTitle,
@@ -31,41 +23,6 @@ export const ResultCardBlock = ({
 
   return (
     <Stack spacing={1.5}>
-      {/* Status chip */}
-      <Box sx={{ textAlign: 'center' }}>
-        {isSolved ? (
-          <Chip color="success" label={t('solvedFairly')} />
-        ) : (
-          <Chip color="warning" label={t('revealedByGiveUp')} />
-        )}
-      </Box>
-
-      {/* Song titles — compact */}
-      <Stack
-        spacing={0.5}
-        sx={{
-          px: 1.5,
-          py: 1.5,
-          borderRadius: 1.5,
-          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid',
-          borderColor: 'divider',
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="body1" sx={{ fontWeight: 600 }}>
-          {serbianTitle}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {russianTitle}
-        </Typography>
-        {originalTitle !== russianTitle && (
-          <Typography variant="body2" color="text.secondary">
-            {originalTitle}
-          </Typography>
-        )}
-      </Stack>
-
       {/* Stats mini-tiles */}
       <Stack direction="row" spacing={1} justifyContent="center">
         <StatTile label={t('attempts')} value={attemptsCount} />

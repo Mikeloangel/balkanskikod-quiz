@@ -194,12 +194,15 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
                     trackId={track.id}
                     pageTitle={gameUIState.pageTitle}
                     showSolvedIcon={gameUIState.isSolved}
+                    isSolved={gameUIState.isSolved}
+                    isRevealed={gameUIState.isRevealed}
                     difficultyStars={gameUIState.difficultyStars}
                     previousTrack={navigationState.previousTrack ? { id: navigationState.previousTrack.id } : null}
                     nextTrack={navigationState.nextTrack ? { id: navigationState.nextTrack.id } : null}
                     openedHints={gameUIState.openedHints}
                     revealedSerbianTitle={progress.revealedSerbianTitle}
                     serbianTitle={track.names.serbian}
+                    originalTitle={track.names.original}
                   />
 
                   <AudioPlayerBlock
@@ -226,10 +229,6 @@ const TrackPageContentInner = ({ track }: TrackPageContentProps) => {
 
                   {gameUIState.isFinished ? (
                     <ResultCardBlock
-                      isSolved={gameUIState.isSolved}
-                      serbianTitle={track.names.serbian}
-                      russianTitle={track.names.russian}
-                      originalTitle={track.names.original}
                       attemptsCount={progress.attemptsCount}
                       hintsUsedCount={progress.hintsUsedCount}
                       revealedSerbianTitle={progress.revealedSerbianTitle}
