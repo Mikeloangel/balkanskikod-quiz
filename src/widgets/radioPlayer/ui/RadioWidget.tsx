@@ -8,7 +8,6 @@ import { CoverArt } from './CoverArt';
 import { ProgressBar } from './ProgressBar';
 
 const WIDGET_HEIGHT = 56;
-const PROGRESS_HEIGHT = 5;
 
 export const RadioWidget: React.FC = () => {
   const { state, currentTrack, resetError } = useRadio();
