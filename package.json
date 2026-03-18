@@ -15,7 +15,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "bot:install": "cd bot && npm install",
+    "bot:dev": "cd bot && npx wrangler dev",
+    "bot:deploy": "cd bot && npx wrangler deploy",
+    "bot:logs": "cd bot && npx wrangler tail"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

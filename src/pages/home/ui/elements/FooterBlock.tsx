@@ -1,6 +1,7 @@
 import { Stack, Typography, Button, Link } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { DonateButton } from '@/shared/ui/DonateButton';
 
 type FooterBlockProps = {
   onResetClick: () => void;
@@ -16,6 +17,7 @@ export const FooterBlock = ({ onResetClick }: FooterBlockProps) => {
           {t('home.footer.aboutProject')}
         </Link>
       </Typography>
+      <DonateButton />
       <Button
         size="small"
         color="secondary"

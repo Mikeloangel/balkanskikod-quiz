@@ -32,6 +32,13 @@ export default {
     solved: "Solved",
     revealed: "Revealed"
   },
+  donate: {
+    button: "Support ⭐",
+    bannerTitle: "Enjoying the quiz?",
+    bannerText: "Support the project with Telegram Stars — quick and easy",
+    dismiss: "Later",
+    tooltip: "Support the project via Telegram Stars",
+  },
   resetDialog: {
     title: "Reset progress",
     description: "All local game progress will be deleted:",

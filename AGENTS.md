@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Проект: **Balkanski kod — угадай мелодию**  
-Стек: React + TypeScript + MUI + React Router + localStorage + Vite
+Стек: React + TypeScript + MUI + React Router + localStorage + Vite + Cloudflare Workers (бот)
 
 ## 1. Цель файла
 
@@ -53,6 +53,14 @@
   - `types.ts` — TypeScript типы контента
   - `index.ts` — экспорт всех языков
   - `ru.ts`, `en.ts`, `sr.ts`, `sr-cyrl.ts` — контент на 4 языках
+- `src/shared/config/donate.ts` — конфиг донатов + feature toggle.
+- `src/shared/ui/DonateButton.tsx` — компактная кнопка донатов (Telegram Stars).
+- `src/shared/ui/DonateBanner.tsx` — баннер донатов на HomePage.
+- `src/shared/ui/icons/TelegramIcon.tsx` — SVG иконка Telegram.
+- `bot/` — Cloudflare Worker бот для Telegram Stars:
+  - `bot/src/index.ts` — логика бота (grammy + webhook).
+  - `bot/wrangler.toml` — конфиг Worker.
+  - `bot/.dev.vars` — локальные секреты (в .gitignore).
 - `src/pages/home/ui/HomePage.tsx` — главная.
 - `src/pages/track/ui/TrackPage.tsx` — игра/трек.
 - `src/pages/about/ui/AboutPage.tsx` — о проекте.
@@ -62,6 +70,7 @@
   - `260309-refactor-contexts.md` — рефакторинг контекстов.
   - `260308-updates.md` — фактические изменения поверх ТЗ.
   - `260310-radio-balkan.md` — ТЗ для радио виджета.
+  - `260318-telegram-stars-donate.md` — ТЗ для донатов через Telegram Stars.
   - *Внимание: файлы в specs отражают историю разработки и могут устаревать. Актуальная документация в корне `docs/`*
 
 ### 3.2. Контекстная архитектура
@@ -160,16 +169,19 @@
 - `VITE_APP_NAME`
 - `VITE_APP_BASE_URL`
 - `VITE_RADIO_MAX_PLAY_TIME_MINUTES` (по умолчанию 30)
+- `VITE_TELEGRAM_DONATE_URL` — deep link на бота донатов (пустая = донаты скрыты)
 
 Скрипты деплоя:
 
-- `npm run build`
-- `npm run deploy`
+- `npm run build` / `npm run deploy` — веб-приложение (GitHub Pages)
+- `npm run bot:deploy` — бот донатов (Cloudflare Workers)
+- `npm run bot:dev` — локальный dev-сервер бота
+- `npm run bot:logs` — живые логи бота
 
 ## 7. Тестирование
 
 ### 7.1. Запуск тестов
-- `npm test` — все тесты (122 теста)
+- `npm test` — все тесты (117 тестов)
 - `npm run test:ui` — UI режим Vitest
 - `npm run test:coverage` — покрытие кода
 
@@ -191,7 +203,7 @@
 - Доменная логика: 30 тестов
 - Radio storage: 7 тестов
 - Storage/Store: 51 тестов
-- **Общее: 122 теста** с полным покрытием функционала интернационализации
+- **Общее: 117 тестов** с полным покрытием функционала интернационализации
 
 ## 8. Перед завершением любой задачи
 

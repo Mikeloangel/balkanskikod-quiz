@@ -44,6 +44,7 @@ export default {
     title: "About the project",
     technologies: "Technologies",
     contacts: "Contacts",
+    support: "Support the project",
     backToHome: "Back to home",
   },
   track: {

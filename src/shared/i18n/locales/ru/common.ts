@@ -32,6 +32,13 @@ export default {
     solved: "Угадан",
     revealed: "Раскрыт"
   },
+  donate: {
+    button: "Поддержать ⭐",
+    bannerTitle: "Нравится викторина?",
+    bannerText: "Поддержите проект через Telegram Stars — это быстро и просто",
+    dismiss: "Позже",
+    tooltip: "Поддержать проект через Telegram Stars",
+  },
   resetDialog: {
     title: "Сбросить прогресс",
     description: "Будет удален весь локальный игровой прогресс:",

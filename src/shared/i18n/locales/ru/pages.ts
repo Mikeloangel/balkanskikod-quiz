@@ -44,6 +44,7 @@ export default {
     title: "О проекте",
     technologies: "Технологии",
     contacts: "Контакты",
+    support: "Поддержать проект",
     backToHome: "На главную",
   },
   track: {

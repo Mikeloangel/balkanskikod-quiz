@@ -3,6 +3,7 @@ import OpenInNewRoundedIcon from '@mui/icons-material/OpenInNewRounded';
 import ShareRoundedIcon from '@mui/icons-material/ShareRounded';
 import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { DonateButton } from '@/shared/ui/DonateButton';
 
 type ResultCardBlockProps = {
   attemptsCount: number;
@@ -41,6 +42,7 @@ export const ResultCardBlock = ({
             Suno
           </Button>
         )}
+        <DonateButton />
         <IconButton
           onClick={onOpenShare}
           sx={{

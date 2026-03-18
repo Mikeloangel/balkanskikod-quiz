@@ -44,6 +44,7 @@ export default {
     title: "О пројекту",
     technologies: "Технологије",
     contacts: "Контакти",
+    support: "Подржи пројекат",
     backToHome: "На почетну",
   },
   track: {

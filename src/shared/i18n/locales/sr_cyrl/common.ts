@@ -32,6 +32,13 @@ export default {
     solved: "Погођено",
     revealed: "Откривено"
   },
+  donate: {
+    button: "Подржи ⭐",
+    bannerTitle: "Свиђа ти се квиз?",
+    bannerText: "Подржи пројекат путем Telegram Stars — брзо и једноставно",
+    dismiss: "Касније",
+    tooltip: "Подржи пројекат путем Telegram Stars",
+  },
   resetDialog: {
     title: "Ресетуј напредак",
     description: "Сав локални напредак игре ће бити обрисан:",

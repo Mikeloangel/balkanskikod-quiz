@@ -1,4 +1,9 @@
 .env
+
+# Bot (Cloudflare Worker)
+bot/.dev.vars
+bot/node_modules
+
 # Logs
 logs
 *.log
@@ -24,3 +29,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+tsconfig.app.tsbuildinfo

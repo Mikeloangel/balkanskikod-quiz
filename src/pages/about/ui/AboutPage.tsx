@@ -5,6 +5,7 @@ import { MetaTags } from '@/shared/ui/MetaTags';
 import { RadioWidget } from '@/widgets/radioPlayer';
 import { LanguageSelector } from '@/shared/i18n';
 import { useAboutContent } from '@/hooks/useAboutContent';
+import { DonateButton } from '@/shared/ui/DonateButton';
 
 export const AboutPage = () => {
   const { t } = useTranslation('pages');
@@ -60,6 +61,13 @@ export const AboutPage = () => {
                   {content?.contacts.telegram || "@mikeloangel"}
                 </Link>
               </Typography>
+            </Stack>
+
+            <Stack spacing={0.5}>
+              <Typography variant="subtitle2" color="text.secondary">
+                {t('about.support')}
+              </Typography>
+              <DonateButton />
             </Stack>
 
             <Typography>

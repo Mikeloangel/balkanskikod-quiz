@@ -12,6 +12,7 @@ import { StatsBlock } from './elements/StatsBlock';
 import { LastSolvedBlock } from './elements/LastSolvedBlock';
 import { TracksListBlock } from './elements/TracksListBlock';
 import { FooterBlock } from './elements/FooterBlock';
+import { DonateBanner } from '@/shared/ui/DonateBanner';
 import { ShareDialog } from './elements/ShareDialog';
 import { ResetDialog } from './elements/ResetDialog';
 
@@ -96,6 +97,8 @@ export const HomePage = () => {
           />
 
           <StatsBlock stats={stats} />
+
+          <DonateBanner />
 
           <LastSolvedBlock lastSolved={lastSolved} />
 
