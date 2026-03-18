@@ -15,7 +15,7 @@ export const HomePage = () => {
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [shareFeedback, setShareFeedback] = useState<string | null>(null);
 
-  // Данные из Zustand store
+  // Данные из progress store
   const { state, actions } = useProgressStore();
   const stats = selectGlobalStats(state, tracksSortedByAddedDate);
   const lastSolved = selectLastSolved(state, tracksSortedByAddedDate, 5);
@@ -59,13 +59,19 @@ export const HomePage = () => {
 - Hover-эффект: подъём + тень
 - Вся карточка кликабельная → `/track/:id`
 
-#### 6. **FooterBlock**
+#### 6. **DonateBanner** (между StatsBlock и LastSolvedBlock)
+- Компактный однострочный баннер: текст слева + кнопка "Поддержать ⭐" справа
+- Рендерится только если `VITE_TELEGRAM_DONATE_URL` задана (feature toggle)
+- Deep link открывает Telegram-бота для Stars-платежей
+
+#### 7. **FooterBlock**
 - Ссылка на страницу "О проекте"
+- Кнопка DonateButton (Telegram Stars) — между ссылкой и кнопкой сброса
 - Кнопка сброса прогресса
 
 ## Управление состоянием
 
-### Zustand Store
+### Progress Store (React Context + useReducer)
 Главная страница использует `useProgressStore` для управления прогрессом:
 
 ```tsx
