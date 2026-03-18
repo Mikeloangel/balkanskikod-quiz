@@ -23,16 +23,6 @@ export const ResultCardBlock = ({
 
   return (
     <Stack spacing={1.5}>
-      {/* Stats mini-tiles */}
-      <Stack direction="row" spacing={1} justifyContent="center">
-        <StatTile label={t('attempts')} value={attemptsCount} />
-        <StatTile label={t('hintsUsed')} value={hintsUsedCount} />
-        <StatTile
-          label={t('explicitHint')}
-          value={revealedSerbianTitle ? t('yes') : t('no')}
-        />
-      </Stack>
-
       {/* Action buttons — compact row */}
       <Stack direction="row" spacing={1} justifyContent="center">
         {sunoUrl && (
@@ -63,6 +53,15 @@ export const ResultCardBlock = ({
         >
           <ShareRoundedIcon sx={{ fontSize: 20 }} />
         </IconButton>
+      </Stack>
+      {/* Stats mini-tiles */}
+      <Stack direction="row" spacing={1} justifyContent="center">
+        <StatTile label={t('attempts')} value={attemptsCount} />
+        <StatTile label={t('hintsUsed')} value={hintsUsedCount} />
+        <StatTile
+          label={t('explicitHint')}
+          value={revealedSerbianTitle ? t('yes') : t('no')}
+        />
       </Stack>
     </Stack>
   );

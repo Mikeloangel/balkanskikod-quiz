@@ -4,6 +4,7 @@ import { UIDialogsProvider, RadioProvider, AudioControlProvider, LanguageProvide
 import { AboutPage } from '@/pages/about';
 import { HomePage } from '@/pages/home';
 import { TrackPage } from '@/pages/track';
+import { RadioTitleOverlay } from '@/shared/ui/RadioTitleOverlay';
 import '@/shared/i18n'; // Initialize i18n
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <LanguageProvider>
       <AudioControlProvider>
         <RadioProvider>
+          <RadioTitleOverlay />
           <ProgressProvider>
             <UIDialogsProvider>
               <Routes>

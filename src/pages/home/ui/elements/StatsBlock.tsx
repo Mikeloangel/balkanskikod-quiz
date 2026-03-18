@@ -26,11 +26,6 @@ export const StatsBlock = ({ stats }: StatsBlockProps) => {
 
   const tiles: StatTile[] = [
     {
-      icon: <LibraryMusicRoundedIcon />,
-      value: stats.totalTracks,
-      label: t('home.statistics.totalTracks'),
-    },
-    {
       icon: <CheckCircleRoundedIcon />,
       value: stats.solvedTracks,
       label: t('home.statistics.solvedTracks'),
@@ -47,6 +42,11 @@ export const StatsBlock = ({ stats }: StatsBlockProps) => {
       value: stats.inProgressTracks,
       label: t('home.statistics.inProgressTracks'),
       color: 'info.main',
+    },
+    {
+      icon: <LibraryMusicRoundedIcon />,
+      value: stats.totalTracks,
+      label: t('home.statistics.totalTracks'),
     },
     {
       icon: <PercentRoundedIcon />,
